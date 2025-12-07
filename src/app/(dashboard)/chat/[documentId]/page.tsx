@@ -1,0 +1,322 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { Send, Loader2, FileText, ArrowLeft, AlertCircle, Bot, User } from 'lucide-react'
+import Link from 'next/link'
+import { cn } from '@/lib/utils'
+
+interface Message {
+    id: string
+    role: 'user' | 'assistant'
+    content: string
+    sources?: { chunk_id: string; text: string; similarity: number }[]
+}
+
+export default function ChatPage() {
+    const params = useParams()
+    const router = useRouter()
+    const documentId = params.documentId as string
+
+    const [document, setDocument] = useState<any>(null)
+    const [messages, setMessages] = useState<Message[]>([])
+    const [input, setInput] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [streamingContent, setStreamingContent] = useState('')
+    const [error, setError] = useState<string | null>(null)
+    const [showSources, setShowSources] = useState<string | null>(null)
+
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const fetchDocument = async () => {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return router.push('/login')
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/${documentId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`,
+                    },
+                }
+            )
+
+            if (!response.ok) {
+                setError('Document not found')
+                return
+            }
+
+            const data = await response.json()
+            setDocument(data)
+        }
+
+        fetchDocument()
+    }, [documentId])
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, [messages, streamingContent])
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!input.trim() || loading) return
+
+        const userMessage: Message = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: input.trim(),
+        }
+
+        setMessages(prev => [...prev, userMessage])
+        setInput('')
+        setLoading(true)
+        setError(null)
+        setStreamingContent('')
+
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/query/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    document_id: documentId,
+                    user_query: userMessage.content,
+                }),
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json()
+                if (errorData.detail?.error === 'query_limit_exceeded') {
+                    router.push('/subscription')
+                    return
+                }
+                throw new Error(errorData.detail?.message || 'Query failed')
+            }
+
+            const reader = response.body?.getReader()
+            const decoder = new TextDecoder()
+            let fullContent = ''
+            let sources: any[] = []
+
+            while (reader) {
+                const { done, value } = await reader.read()
+                if (done) break
+
+                const chunk = decoder.decode(value)
+                const lines = chunk.split('\n')
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.slice(6))
+                            if (data.chunk) {
+                                fullContent += data.chunk
+                                setStreamingContent(fullContent)
+                            }
+                            if (data.done && data.source_chunks) {
+                                sources = data.source_chunks
+                            }
+                        } catch { }
+                    }
+                }
+            }
+
+            const assistantMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: fullContent,
+                sources,
+            }
+
+            setMessages(prev => [...prev, assistantMessage])
+            setStreamingContent('')
+
+        } catch (err: any) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    if (error && !document) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh]">
+                <AlertCircle className="w-16 h-16 text-red-400 mb-4" />
+                <h2 className="text-xl font-semibold text-white mb-2">Document not found</h2>
+                <p className="text-slate-400 mb-6">This document may have been deleted or you don't have access.</p>
+                <Link
+                    href="/dashboard"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Dashboard
+                </Link>
+            </div>
+        )
+    }
+
+    return (
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
+            {/* Header */}
+            <div className="flex items-center gap-4 pb-4 border-b border-slate-800">
+                <Link
+                    href="/dashboard"
+                    className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                </Link>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <div>
+                        <h1 className="text-white font-semibold">
+                            {document?.file_path?.split('/').pop() || 'Document'}
+                        </h1>
+                        <div className={cn(
+                            "text-xs px-2 py-0.5 rounded-full inline-block",
+                            document?.status === 'ready'
+                                ? "bg-emerald-500/20 text-emerald-400"
+                                : "bg-amber-500/20 text-amber-400"
+                        )}>
+                            {document?.status || 'loading'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto py-6 space-y-6">
+                {messages.length === 0 && !loading && (
+                    <div className="text-center text-slate-400 py-12">
+                        <Bot className="w-16 h-16 mx-auto mb-4 text-slate-600" />
+                        <h3 className="text-lg font-semibold text-white mb-2">Start a conversation</h3>
+                        <p>Ask any question about your document</p>
+                    </div>
+                )}
+
+                {messages.map((message) => (
+                    <div
+                        key={message.id}
+                        className={cn(
+                            "flex gap-4",
+                            message.role === 'user' ? "justify-end" : "justify-start"
+                        )}
+                    >
+                        {message.role === 'assistant' && (
+                            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                                <Bot className="w-4 h-4 text-indigo-400" />
+                            </div>
+                        )}
+                        <div
+                            className={cn(
+                                "max-w-[80%] rounded-2xl px-4 py-3",
+                                message.role === 'user'
+                                    ? "bg-indigo-500 text-white"
+                                    : "bg-slate-800 text-slate-200"
+                            )}
+                        >
+                            <div className="whitespace-pre-wrap">{message.content}</div>
+
+                            {message.sources && message.sources.length > 0 && (
+                                <div className="mt-3 pt-3 border-t border-slate-700">
+                                    <button
+                                        onClick={() => setShowSources(showSources === message.id ? null : message.id)}
+                                        className="text-xs text-indigo-400 hover:text-indigo-300"
+                                    >
+                                        {showSources === message.id ? 'Hide sources' : `View ${message.sources.length} source${message.sources.length > 1 ? 's' : ''}`}
+                                    </button>
+
+                                    {showSources === message.id && (
+                                        <div className="mt-2 space-y-2">
+                                            {message.sources.map((source, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="text-xs p-2 bg-slate-900 rounded-lg text-slate-400"
+                                                >
+                                                    <div className="text-indigo-400 mb-1">
+                                                        Relevance: {(source.similarity * 100).toFixed(1)}%
+                                                    </div>
+                                                    <div className="line-clamp-3">{source.text}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        {message.role === 'user' && (
+                            <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                                <User className="w-4 h-4 text-purple-400" />
+                            </div>
+                        )}
+                    </div>
+                ))}
+
+                {/* Streaming response */}
+                {streamingContent && (
+                    <div className="flex gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                            <Bot className="w-4 h-4 text-indigo-400" />
+                        </div>
+                        <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-slate-800 text-slate-200">
+                            <div className="whitespace-pre-wrap">{streamingContent}</div>
+                        </div>
+                    </div>
+                )}
+
+                {loading && !streamingContent && (
+                    <div className="flex gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                            <Bot className="w-4 h-4 text-indigo-400" />
+                        </div>
+                        <div className="rounded-2xl px-4 py-3 bg-slate-800">
+                            <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />
+                        </div>
+                    </div>
+                )}
+
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* Error */}
+            {error && (
+                <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                    {error}
+                </div>
+            )}
+
+            {/* Input */}
+            <form onSubmit={handleSubmit} className="pt-4 border-t border-slate-800">
+                <div className="flex gap-4">
+                    <input
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Ask a question about your document..."
+                        disabled={loading || document?.status !== 'ready'}
+                        className="flex-1 px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all disabled:opacity-50"
+                    />
+                    <button
+                        type="submit"
+                        disabled={loading || !input.trim() || document?.status !== 'ready'}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-indigo-500/30"
+                    >
+                        {loading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Send className="w-5 h-5" />
+                        )}
+                    </button>
+                </div>
+            </form>
+        </div>
+    )
+}

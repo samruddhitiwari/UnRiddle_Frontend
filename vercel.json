@@ -1,0 +1,13 @@
+{
+    "buildCommand": "npm run build",
+    "outputDirectory": ".next",
+    "installCommand": "npm install",
+    "framework": "nextjs",
+    "devCommand": "npm run dev",
+    "env": {
+        "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
+        "NEXT_PUBLIC_BACKEND_URL": "@backend_url",
+        "NEXT_PUBLIC_PAYPAL_CLIENT_ID": "@paypal_client_id"
+    }
+}
