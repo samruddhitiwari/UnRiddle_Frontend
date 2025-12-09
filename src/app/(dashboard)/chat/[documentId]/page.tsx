@@ -300,9 +300,15 @@ export default function ChatPage() {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask a question about your document..."
-                        disabled={loading || document?.status !== 'ready'}
-                        className="flex-1 px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all disabled:opacity-50"
+                        placeholder={
+                            !document
+                                ? "Loading document..."
+                                : document.status !== 'ready'
+                                    ? `Document is ${document.status}... Please wait.`
+                                    : "Ask a question about your document..."
+                        }
+                        disabled={loading || (document && document.status !== 'ready')}
+                        className="flex-1 px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <button
                         type="submit"
