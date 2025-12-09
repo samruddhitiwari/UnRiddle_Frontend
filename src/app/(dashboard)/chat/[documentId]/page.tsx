@@ -23,6 +23,7 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
+    const [processing, setProcessing] = useState(false)
     const [streamingContent, setStreamingContent] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [showSources, setShowSources] = useState<string | null>(null)
@@ -59,6 +60,58 @@ export default function ChatPage() {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [messages, streamingContent])
+
+    // Auto-refresh document status if not ready
+    useEffect(() => {
+        if (document && document.status !== 'ready' && document.status !== 'failed') {
+            const interval = setInterval(async () => {
+                const { data: { session } } = await supabase.auth.getSession()
+                if (!session) return
+
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/${documentId}`,
+                    { headers: { 'Authorization': `Bearer ${session.access_token}` } }
+                )
+                if (response.ok) {
+                    const data = await response.json()
+                    setDocument(data)
+                    if (data.status === 'ready' || data.status === 'failed') {
+                        clearInterval(interval)
+                    }
+                }
+            }, 3000)
+            return () => clearInterval(interval)
+        }
+    }, [document, documentId])
+
+    const handleProcessDocument = async () => {
+        setProcessing(true)
+        setError(null)
+
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/${documentId}/process`,
+                {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${session?.access_token}` }
+                }
+            )
+
+            if (!response.ok) {
+                const data = await response.json()
+                throw new Error(data.detail || 'Processing failed')
+            }
+
+            const data = await response.json()
+            setDocument({ ...document, status: 'ready' })
+        } catch (err: any) {
+            setError(err.message)
+        } finally {
+            setProcessing(false)
+        }
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -196,9 +249,43 @@ export default function ChatPage() {
             <div className="flex-1 overflow-y-auto py-6 space-y-6">
                 {messages.length === 0 && !loading && (
                     <div className="text-center text-slate-400 py-12">
-                        <Bot className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-                        <h3 className="text-lg font-semibold text-white mb-2">Start a conversation</h3>
-                        <p>Ask any question about your document</p>
+                        {document?.status === 'ready' ? (
+                            <>
+                                <Bot className="w-16 h-16 mx-auto mb-4 text-slate-600" />
+                                <h3 className="text-lg font-semibold text-white mb-2">Start a conversation</h3>
+                                <p>Ask any question about your document</p>
+                            </>
+                        ) : document?.status === 'failed' ? (
+                            <>
+                                <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-400" />
+                                <h3 className="text-lg font-semibold text-white mb-2">Processing Failed</h3>
+                                <p className="mb-4">{document?.error_message || 'An error occurred while processing'}</p>
+                                <button
+                                    onClick={handleProcessDocument}
+                                    disabled={processing}
+                                    className="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-all disabled:opacity-50"
+                                >
+                                    {processing ? 'Retrying...' : 'Retry Processing'}
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Loader2 className="w-16 h-16 mx-auto mb-4 text-indigo-400 animate-spin" />
+                                <h3 className="text-lg font-semibold text-white mb-2">
+                                    Document is {document?.status || 'loading'}...
+                                </h3>
+                                <p className="mb-4">This may take a minute for large documents</p>
+                                {document?.status === 'uploaded' && (
+                                    <button
+                                        onClick={handleProcessDocument}
+                                        disabled={processing}
+                                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all disabled:opacity-50"
+                                    >
+                                        {processing ? 'Processing...' : 'Process Now'}
+                                    </button>
+                                )}
+                            </>
+                        )}
                     </div>
                 )}
 
