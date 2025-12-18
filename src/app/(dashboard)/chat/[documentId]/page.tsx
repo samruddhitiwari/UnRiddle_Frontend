@@ -275,13 +275,13 @@ export default function ChatPage() {
                                     Document is {document?.status || 'loading'}...
                                 </h3>
                                 <p className="mb-4">This may take a minute for large documents</p>
-                                {document?.status === 'uploaded' && (
+                                {(document?.status === 'uploaded' || document?.status === 'indexing') && (
                                     <button
                                         onClick={handleProcessDocument}
                                         disabled={processing}
                                         className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all disabled:opacity-50"
                                     >
-                                        {processing ? 'Processing...' : 'Process Now'}
+                                        {processing ? 'Processing...' : document?.status === 'indexing' ? 'Retry Processing' : 'Process Now'}
                                     </button>
                                 )}
                             </>
