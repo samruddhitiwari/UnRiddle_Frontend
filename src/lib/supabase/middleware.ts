@@ -27,10 +27,18 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    // Refresh session if expired
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    // Refresh session if expired - with timeout protection
+    let user = null
+    try {
+        const { data, error } = await supabase.auth.getUser()
+        if (!error) {
+            user = data.user
+        }
+    } catch (e) {
+        // If auth check fails (timeout, network error), allow request to continue
+        // The page-level auth check will handle it
+        console.error('Middleware auth check failed:', e)
+    }
 
     // Protected routes
     const protectedPaths = ['/dashboard', '/upload', '/chat', '/subscription']
