@@ -149,16 +149,29 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800 py-12 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <FileText className="w-4 h-4 text-white" />
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                <FileText className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-white font-semibold">Unriddle</span>
             </div>
-            <span className="text-white font-semibold">Unriddle</span>
+            <div className="flex items-center gap-6 text-sm">
+              <Link href="/terms" className="text-slate-400 hover:text-white transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/privacy" className="text-slate-400 hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/refund" className="text-slate-400 hover:text-white transition-colors">
+                Refund Policy
+              </Link>
+            </div>
           </div>
-          <p className="text-slate-500 text-sm">
-            © 2024 Unriddle. All rights reserved.
-          </p>
+          <div className="text-center text-slate-500 text-sm">
+            © {new Date().getFullYear()} Unriddle. All rights reserved. Payments processed by Paddle.com
+          </div>
         </div>
       </footer>
     </div>

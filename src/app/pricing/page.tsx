@@ -1,17 +1,19 @@
 import Link from 'next/link'
-import { Check, Zap, Crown, Building2, ArrowLeft, FileText } from 'lucide-react'
+import { Check, Zap, Crown, Building2, ArrowLeft, FileText, Timer, Mail } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Plan {
     id: string
     name: string
-    price: number
+    price: number | string
     period: string
     description: string
     features: string[]
     icon: any
     gradient: string
     popular?: boolean
+    oneTime?: boolean
+    contactSales?: boolean
 }
 
 const plans: Plan[] = [
@@ -28,13 +30,31 @@ const plans: Plan[] = [
             '50 queries per month',
             '10MB max file size',
             'Basic chat interface',
-            'Email support',
+            'Community support',
+        ],
+    },
+    {
+        id: 'starter',
+        name: 'Starter Pass',
+        price: 3,
+        period: '14 days',
+        description: 'Full access trial - no subscription',
+        icon: Timer,
+        gradient: 'from-emerald-500 to-teal-600',
+        oneTime: true,
+        features: [
+            '50 documents',
+            '500 queries',
+            '50MB max file size',
+            'Priority processing',
+            'Source citations',
+            'No auto-renewal',
         ],
     },
     {
         id: 'pro',
         name: 'Pro',
-        price: 19,
+        price: 6,
         period: 'month',
         description: 'For professionals who need more',
         icon: Crown,
@@ -52,11 +72,12 @@ const plans: Plan[] = [
     {
         id: 'enterprise',
         name: 'Enterprise',
-        price: 99,
-        period: 'month',
+        price: 'Custom',
+        period: '',
         description: 'For teams and organizations',
         icon: Building2,
         gradient: 'from-purple-500 to-pink-600',
+        contactSales: true,
         features: [
             'Unlimited documents',
             'Unlimited queries',
@@ -120,7 +141,7 @@ export default function PricingPage() {
                     </div>
 
                     {/* Plans */}
-                    <div className="grid md:grid-cols-3 gap-8 mb-20">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
                         {plans.map((plan) => (
                             <div
                                 key={plan.id}
@@ -148,8 +169,15 @@ export default function PricingPage() {
                                 <p className="text-slate-400 mt-2">{plan.description}</p>
 
                                 <div className="mt-6 mb-8">
-                                    <span className="text-5xl font-bold text-white">${plan.price}</span>
-                                    <span className="text-slate-400 text-lg">/{plan.period}</span>
+                                    {typeof plan.price === 'number' ? (
+                                        <>
+                                            <span className="text-5xl font-bold text-white">${plan.price}</span>
+                                            {plan.period && <span className="text-slate-400 text-lg">/{plan.period}</span>}
+                                            {plan.oneTime && <span className="ml-2 text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">one-time</span>}
+                                        </>
+                                    ) : (
+                                        <span className="text-4xl font-bold text-white">{plan.price}</span>
+                                    )}
                                 </div>
 
                                 <ul className="space-y-4 mb-8">
@@ -169,17 +197,28 @@ export default function PricingPage() {
                                     ))}
                                 </ul>
 
-                                <Link
-                                    href="/login"
-                                    className={cn(
-                                        "block w-full py-4 rounded-xl font-semibold text-center transition-all",
-                                        plan.popular
-                                            ? "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
-                                            : "bg-slate-800 hover:bg-slate-700 text-white"
-                                    )}
-                                >
-                                    {plan.id === 'free' ? 'Get Started Free' : `Start ${plan.name} Plan`}
-                                </Link>
+                                {plan.contactSales ? (
+                                    <a
+                                        href="mailto:sales@unriddle.ai?subject=Enterprise%20Inquiry"
+                                        className="block w-full py-4 rounded-xl font-semibold text-center transition-all bg-slate-800 hover:bg-slate-700 text-white"
+                                    >
+                                        Contact Sales
+                                    </a>
+                                ) : (
+                                    <Link
+                                        href="/login"
+                                        className={cn(
+                                            "block w-full py-4 rounded-xl font-semibold text-center transition-all",
+                                            plan.popular
+                                                ? "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
+                                                : plan.oneTime
+                                                    ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/30"
+                                                    : "bg-slate-800 hover:bg-slate-700 text-white"
+                                        )}
+                                    >
+                                        {plan.id === 'free' ? 'Get Started Free' : plan.oneTime ? 'Buy Starter Pass' : `Start ${plan.name}`}
+                                    </Link>
+                                )}
                             </div>
                         ))}
                     </div>
