@@ -170,7 +170,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="text-center text-slate-500 text-sm">
-            © {new Date().getFullYear()} Unriddle. All rights reserved. Payments processed by Paddle.com
+            © {new Date().getFullYear()} Volta Labs. All rights reserved. Payments processed by Paddle.com
           </div>
         </div>
       </footer>
