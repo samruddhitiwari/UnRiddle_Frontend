@@ -183,7 +183,7 @@ export default function TermsPage() {
                             <h2 className="text-xl font-semibold text-white mb-4">15. Contact Us</h2>
                             <p>
                                 If you have any questions about these Terms of Service, please contact us at:{' '}
-                                <a href="mailto:legal@voltalabs.space" className="text-indigo-400 hover:underline">legal@voltalabs.space</a>
+                                <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">support@voltalabs.space</a>
                             </p>
                         </section>
                     </div>

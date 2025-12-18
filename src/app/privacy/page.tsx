@@ -160,7 +160,7 @@ export default function PrivacyPage() {
                             </ul>
                             <p className="mt-4">
                                 To exercise these rights, please contact us at{' '}
-                                <a href="mailto:privacy@voltalabs.space" className="text-indigo-400 hover:underline">privacy@voltalabs.space</a>.
+                                <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">support@voltalabs.space</a>.
                                 We will respond to your request within a reasonable timeframe.
                             </p>
                         </section>
@@ -197,7 +197,7 @@ export default function PrivacyPage() {
                             <h2 className="text-xl font-semibold text-white mb-4">14. Contact Us</h2>
                             <p>
                                 If you have any questions about this Privacy Policy or our data practices, please contact us at:{' '}
-                                <a href="mailto:privacy@voltalabs.space" className="text-indigo-400 hover:underline">privacy@voltalabs.space</a>
+                                <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">support@voltalabs.space</a>
                             </p>
                         </section>
                     </div>

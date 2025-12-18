@@ -102,7 +102,7 @@ export default function RefundPage() {
                             <ol className="list-decimal list-inside space-y-3 ml-2">
                                 <li>
                                     Email us at{' '}
-                                    <a href="mailto:billing@voltalabs.space" className="text-indigo-400 hover:underline">billing@voltalabs.space</a>{' '}
+                                    <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">support@voltalabs.space</a>{' '}
                                     with the subject line &quot;Refund Request&quot;
                                 </li>
                                 <li>Include the email address associated with your Unriddle account</li>
@@ -145,7 +145,7 @@ export default function RefundPage() {
                             <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
                             <p>
                                 If you have any questions about our Refund Policy or need assistance with billing, please contact us at:{' '}
-                                <a href="mailto:billing@voltalabs.space" className="text-indigo-400 hover:underline">billing@voltalabs.space</a>
+                                <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">support@voltalabs.space</a>
                             </p>
                         </section>
                     </div>
