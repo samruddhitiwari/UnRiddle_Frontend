@@ -3,7 +3,7 @@ import { FileText, ArrowLeft } from 'lucide-react'
 
 export const metadata = {
     title: 'Refund Policy | Unriddle',
-    description: 'Refund Policy for Unriddle - Our fair approach to refunds and cancellations',
+    description: 'Refund Policy for Unriddle - 14-day refund policy for all purchases',
 }
 
 export default function RefundPage() {
@@ -34,118 +34,76 @@ export default function RefundPage() {
                     </Link>
 
                     <h1 className="text-4xl font-bold text-white mb-2">Refund Policy</h1>
-                    <p className="text-slate-400 mb-8">Last updated: December 2024</p>
+                    <p className="text-slate-400 mb-8">Last updated: December 2025</p>
 
                     <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 space-y-8 text-slate-300 leading-relaxed">
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Overview</h2>
+                            <h2 className="text-xl font-semibold text-white mb-4">Introduction</h2>
+                            <p className="mb-3">
+                                Unriddle is operated by Volta Labs. You can access our service at{' '}
+                                <a href="https://unriddle.voltalabs.space" className="text-indigo-400 hover:underline">
+                                    https://unriddle.voltalabs.space
+                                </a>.
+                            </p>
                             <p>
-                                At Unriddle, operated by Volta Labs, we want you to be satisfied with your purchase. This Refund Policy outlines our approach to refunds for our paid plans. All payments and refunds are processed by Paddle.com, our Merchant of Record.
+                                All payments for Unriddle are processed by Paddle.com, which acts as the Merchant of Record for all transactions. Paddle handles billing, payment processing, and refunds on our behalf.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Starter Pass ($3 One-Time Purchase)</h2>
-                            <p className="mb-3">
-                                The Starter Pass is a one-time payment of $3 USD that provides full access to Unriddle for 14 days. It does not automatically renew.
+                            <h2 className="text-xl font-semibold text-white mb-4">14-Day Refund Policy</h2>
+                            <p className="mb-4">
+                                We offer a 14-day refund policy for all purchases made through Unriddle. If you are not satisfied with your purchase, you may request a full refund within 14 days of the original purchase date.
                             </p>
                             <div className="bg-slate-800/50 rounded-xl p-4 mb-4">
-                                <h3 className="text-lg font-medium text-white mb-2">Refund Eligibility</h3>
-                                <ul className="list-disc list-inside space-y-1 ml-2">
-                                    <li>Refund requests must be submitted within <strong className="text-white">48 hours</strong> of purchase</li>
-                                    <li>You must not have used more than <strong className="text-white">10 queries</strong> on the service</li>
-                                    <li>Refunds are not available after the 48-hour window or if usage exceeds 10 queries</li>
+                                <h3 className="text-lg font-medium text-white mb-3">This policy applies to:</h3>
+                                <ul className="list-disc list-inside space-y-2 ml-2">
+                                    <li>
+                                        <strong className="text-white">Starter Pass</strong> — $3 one-time purchase for 14 days of access
+                                    </li>
+                                    <li>
+                                        <strong className="text-white">Pro Subscription</strong> — $6/month subscription (initial subscription period)
+                                    </li>
                                 </ul>
                             </div>
                             <p>
-                                Given the low cost of the Starter Pass, we ask that you evaluate whether the service meets your needs within the refund window before extensive use.
+                                To request a refund, simply contact us within 14 days of your purchase. No additional conditions apply.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Pro Subscription ($6/Month)</h2>
-                            <p className="mb-3">
-                                The Pro plan is a monthly subscription that automatically renews until cancelled.
+                            <h2 className="text-xl font-semibold text-white mb-4">Subscription Cancellations</h2>
+                            <p className="mb-4">
+                                You may cancel your Pro subscription at any time through the Paddle customer portal or by contacting us directly.
                             </p>
-                            <div className="bg-slate-800/50 rounded-xl p-4 mb-4">
-                                <h3 className="text-lg font-medium text-white mb-2">Refund Eligibility</h3>
-                                <ul className="list-disc list-inside space-y-1 ml-2">
-                                    <li>Refund requests must be submitted within <strong className="text-white">7 days</strong> of the initial subscription or any renewal charge</li>
-                                    <li>You must not have used more than <strong className="text-white">25 queries</strong> in the current billing period</li>
-                                </ul>
-                            </div>
-
-                            <div className="bg-slate-800/50 rounded-xl p-4 mb-4">
-                                <h3 className="text-lg font-medium text-white mb-2">Cancellation</h3>
-                                <p>
-                                    You may cancel your Pro subscription at any time through the Paddle customer portal or by contacting us. Upon cancellation:
-                                </p>
-                                <ul className="list-disc list-inside space-y-1 ml-2 mt-2">
-                                    <li>You will retain access until the end of your current billing period</li>
-                                    <li>No further charges will be made after cancellation</li>
-                                    <li>We do not provide partial refunds for unused time within a billing period</li>
-                                </ul>
-                            </div>
+                            <ul className="list-disc list-inside space-y-2 ml-2">
+                                <li>Upon cancellation, you will retain access until the end of your current billing period</li>
+                                <li>No further charges will be made after cancellation</li>
+                                <li>Refunds are available within the 14-day period from the initial subscription purchase</li>
+                                <li>After the 14-day refund period, cancellations will stop future billing but no refund will be issued for the current period</li>
+                            </ul>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Enterprise Plans</h2>
-                            <p>
-                                Enterprise plans have custom terms and pricing. Refund policies for Enterprise customers are outlined in individual agreements. Please contact us to discuss your specific situation.
+                            <h2 className="text-xl font-semibold text-white mb-4">How Refunds Are Processed</h2>
+                            <p className="mb-4">
+                                All refunds are processed by Paddle.com, our Merchant of Record.
                             </p>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">How to Request a Refund</h2>
-                            <p className="mb-4">To request a refund, please follow these steps:</p>
-                            <ol className="list-decimal list-inside space-y-3 ml-2">
-                                <li>
-                                    Email us at{' '}
-                                    <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">support@voltalabs.space</a>{' '}
-                                    with the subject line &quot;Refund Request&quot;
-                                </li>
-                                <li>Include the email address associated with your Unriddle account</li>
-                                <li>Briefly explain the reason for your refund request</li>
-                                <li>We will review your request and respond within 3-5 business days</li>
-                            </ol>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Refund Processing</h2>
-                            <p className="mb-3">
-                                All refunds are processed by Paddle.com. Once approved:
-                            </p>
-                            <ul className="list-disc list-inside space-y-1 ml-4">
-                                <li>Refunds are issued to the original payment method</li>
+                            <ul className="list-disc list-inside space-y-2 ml-2">
+                                <li>Refunds are issued to your original payment method</li>
                                 <li>Processing time is typically 5-10 business days, depending on your financial institution</li>
                                 <li>You will receive confirmation from Paddle when the refund is processed</li>
                             </ul>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Exceptions</h2>
-                            <p className="mb-3">We may decline a refund request in the following situations:</p>
-                            <ul className="list-disc list-inside space-y-1 ml-4">
-                                <li>The request is made outside the eligible refund window</li>
-                                <li>Usage exceeds the limits specified above</li>
-                                <li>We detect abuse of our refund policy (such as repeated purchases and refund requests)</li>
-                                <li>The account has been terminated for violating our Terms of Service</li>
-                            </ul>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Chargebacks</h2>
-                            <p>
-                                We encourage you to contact us directly if you have any billing concerns before initiating a chargeback with your bank or payment provider. We are committed to resolving issues fairly and promptly. Unauthorized chargebacks may result in account suspension.
-                            </p>
-                        </section>
-
-                        <section>
                             <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
                             <p>
-                                If you have any questions about our Refund Policy or need assistance with billing, please contact us at:{' '}
-                                <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">support@voltalabs.space</a>
+                                If you would like to request a refund or have any questions about this policy, please contact us at:{' '}
+                                <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">
+                                    support@voltalabs.space
+                                </a>
                             </p>
                         </section>
                     </div>
