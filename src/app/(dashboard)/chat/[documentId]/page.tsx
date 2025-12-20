@@ -196,8 +196,8 @@ export default function ChatPage() {
                 id: Date.now().toString(),
                 role: 'assistant',
                 content: `**📚 Generated ${outputType.charAt(0).toUpperCase() + outputType.slice(1)}:**\n\n${typeof data.content === 'string'
-                        ? data.content
-                        : JSON.stringify(data.content, null, 2)
+                    ? data.content
+                    : JSON.stringify(data.content, null, 2)
                     }`,
             }
             setMessages(prev => [...prev, generatedMessage])
@@ -299,7 +299,7 @@ export default function ChatPage() {
                 content: fullContent,
                 sources,
                 confidence,
-                groundingWarning,
+                groundingWarning: groundingWarning || undefined,
             }
 
             setMessages(prev => [...prev, assistantMessage])
