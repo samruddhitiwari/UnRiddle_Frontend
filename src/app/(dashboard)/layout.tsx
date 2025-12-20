@@ -30,6 +30,7 @@ interface NavItem {
 const navigation: NavItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Upload', href: '/upload', icon: Upload },
+    { name: 'Sessions', href: '/sessions', icon: MessageSquare },
     { name: 'Subscription', href: '/subscription', icon: CreditCard },
 ]
 
