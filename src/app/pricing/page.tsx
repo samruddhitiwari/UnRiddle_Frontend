@@ -200,13 +200,19 @@ export default function PricingPage() {
                     </Link>
                   ) : plan.id === "pro" ? (
                     <button
-                      onClick={() => {
-                        window.location.href = "https://checkout.dodopayments.com/buy/pdt_0NVJl7v7rUIYOFuhWmwZl?quantity=1";
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.location.assign(
+                          "https://checkout.dodopayments.com/buy/pdt_0NVJl7v7rUIYOFuhWmwZl?quantity=1"
+                        );
                       }}
                       className="block w-full py-4 rounded-xl font-semibold text-center transition-all bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
                     >
                       Upgrade to Pro
                     </button>
+
                   ) : (
                     <Link
                       href={plan.id === "free" ? "/signup" : "/checkout"}
