@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { FileText, ArrowRight, Zap, Search, Shield, MessageSquare } from 'lucide-react';
+import { FileText, ArrowRight, Zap, Search, Shield, MessageSquare, File } from 'lucide-react';
 import { ReviewCard } from './components/ReviewCard';
 import { ReviewForm } from './components/ReviewForm';
 
@@ -19,6 +19,11 @@ export default function HomePage() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
 
+  // Hero ambient visual system state
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+
   // Fetch reviews on mount
   useEffect(() => {
     fetchReviews();
@@ -26,7 +31,7 @@ export default function HomePage() {
 
   const fetchReviews = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
       const res = await fetch(`${apiUrl}/reviews?limit=6`);
       if (res.ok) {
         const data = await res.json();
@@ -45,7 +50,7 @@ export default function HomePage() {
     reviewerName: string;
     isAnonymous: boolean;
   }) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
     // Note: In production, you'd get user_id from auth context
     const res = await fetch(`${apiUrl}/reviews?user_id=demo`, {
       method: 'POST',
@@ -124,43 +129,248 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="px-4 py-20 md:py-28">
+      <section className="px-4 py-20 md:py-28 overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="max-w-3xl">
-            {/* Badge */}
-            <div className="badge mb-6">
-              <Zap size={14} />
-              <span>Simple document conversations</span>
+          <div
+            ref={heroRef}
+            className="grid md:grid-cols-2 gap-12 md:gap-8 items-center"
+            onMouseMove={(e) => {
+              if (heroRef.current) {
+                const rect = heroRef.current.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                setMousePosition({ x, y });
+              }
+            }}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => {
+              setIsHovering(false);
+              setMousePosition({ x: 0, y: 0 });
+            }}
+          >
+            {/* Left Side - Content (FINAL - DO NOT CHANGE) */}
+            <div className="max-w-xl">
+              {/* Badge */}
+              <div className="badge mb-6">
+                <Zap size={14} />
+                <span>Simple document conversations</span>
+              </div>
+
+              {/* Headline */}
+              <h1 className="heading-xl mb-6">
+                Chat with your<br />
+                <span style={{ color: 'var(--accent-coral)' }}>documents.</span>
+              </h1>
+
+              {/* Subtext */}
+              <p className="body-lg mb-10 max-w-xl">
+                Upload any PDF. Ask questions in plain English.
+                Get answers that cite exactly where they came from.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-4">
+                <Link href="/login" className="btn-primary">
+                  Start Free <ArrowRight size={18} />
+                </Link>
+                <Link href="/pricing" className="btn-secondary">
+                  View Pricing
+                </Link>
+              </div>
+
+              {/* Social proof snippet */}
+              <p className="mt-8 text-sm" style={{ color: 'var(--text-muted)' }}>
+                Free tier includes 50 queries. No credit card needed.
+              </p>
             </div>
 
-            {/* Headline */}
-            <h1 className="heading-xl mb-6">
-              Chat with your<br />
-              <span style={{ color: 'var(--accent-coral)' }}>documents.</span>
-            </h1>
+            {/* Right Side - Ambient Visual System */}
+            <div className="relative h-[400px] md:h-[480px] hidden md:block">
+              {/* A. PRIMARY ELEMENT - Oversized Paper Sheet (Anchor) */}
+              <div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{
+                  transform: isHovering
+                    ? `perspective(1000px) rotateY(${mousePosition.x * 3}deg) rotateX(${-mousePosition.y * 3}deg)`
+                    : 'perspective(1000px) rotateY(0deg) rotateX(0deg)',
+                  transition: 'transform 0.6s cubic-bezier(0.33, 1, 0.68, 1)',
+                }}
+              >
+                <div
+                  style={{
+                    width: '320px',
+                    height: '400px',
+                    backgroundColor: '#FAF9F6',
+                    border: '2px solid var(--border-dark)',
+                    borderRadius: '4px',
+                    boxShadow: '8px 8px 0 var(--border-dark)',
+                    transform: 'rotate(6deg)',
+                  }}
+                />
+              </div>
 
-            {/* Subtext */}
-            <p className="body-lg mb-10 max-w-xl">
-              Upload any PDF. Ask questions in plain English.
-              Get answers that cite exactly where they came from.
-            </p>
+              {/* B. SECONDARY ELEMENTS - Floating Document Chips */}
+              {/* Chip 1 - Top left */}
+              <div
+                className="absolute"
+                style={{
+                  top: '15%',
+                  left: '5%',
+                  transform: isHovering
+                    ? `translate(${-mousePosition.x * 15}px, ${-mousePosition.y * 15}px) rotate(-3deg)`
+                    : 'translate(0, 0) rotate(-3deg)',
+                  transition: 'transform 0.8s cubic-bezier(0.33, 1, 0.68, 1)',
+                  animation: 'drift1 6s ease-in-out infinite',
+                }}
+              >
+                <div
+                  className="flex items-center gap-2 px-3 py-2"
+                  style={{
+                    backgroundColor: 'var(--bg-white)',
+                    border: '2px solid var(--border-dark)',
+                    borderRadius: '6px',
+                    boxShadow: '3px 3px 0 var(--border-dark)',
+                  }}
+                >
+                  <File size={14} style={{ color: 'var(--accent-coral)' }} />
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>report.pdf</span>
+                </div>
+              </div>
 
-            {/* CTAs */}
-            <div className="flex flex-wrap gap-4">
-              <Link href="/login" className="btn-primary">
-                Start Free <ArrowRight size={18} />
-              </Link>
-              <Link href="/pricing" className="btn-secondary">
-                View Pricing
-              </Link>
+              {/* Chip 2 - Top right */}
+              <div
+                className="absolute"
+                style={{
+                  top: '8%',
+                  right: '15%',
+                  transform: isHovering
+                    ? `translate(${-mousePosition.x * 20}px, ${-mousePosition.y * 20}px) rotate(4deg)`
+                    : 'translate(0, 0) rotate(4deg)',
+                  transition: 'transform 0.75s cubic-bezier(0.33, 1, 0.68, 1)',
+                  animation: 'drift2 7s ease-in-out infinite',
+                }}
+              >
+                <div
+                  className="flex items-center gap-2 px-3 py-2"
+                  style={{
+                    backgroundColor: 'var(--bg-white)',
+                    border: '2px solid var(--border-dark)',
+                    borderRadius: '6px',
+                    boxShadow: '3px 3px 0 var(--border-dark)',
+                  }}
+                >
+                  <FileText size={14} style={{ color: 'var(--bg-mint)' }} />
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>notes.pdf</span>
+                </div>
+              </div>
+
+              {/* Chip 3 - Middle right */}
+              <div
+                className="absolute"
+                style={{
+                  top: '45%',
+                  right: '0%',
+                  transform: isHovering
+                    ? `translate(${-mousePosition.x * 25}px, ${-mousePosition.y * 25}px) rotate(-2deg)`
+                    : 'translate(0, 0) rotate(-2deg)',
+                  transition: 'transform 0.7s cubic-bezier(0.33, 1, 0.68, 1)',
+                  animation: 'drift3 8s ease-in-out infinite',
+                }}
+              >
+                <div
+                  className="flex items-center gap-2 px-3 py-2"
+                  style={{
+                    backgroundColor: 'var(--bg-white)',
+                    border: '2px solid var(--border-dark)',
+                    borderRadius: '6px',
+                    boxShadow: '3px 3px 0 var(--border-dark)',
+                  }}
+                >
+                  <File size={14} style={{ color: 'var(--bg-lavender)' }} />
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>thesis.pdf</span>
+                </div>
+              </div>
+
+              {/* Chip 4 - Bottom left */}
+              <div
+                className="absolute"
+                style={{
+                  bottom: '20%',
+                  left: '8%',
+                  transform: isHovering
+                    ? `translate(${-mousePosition.x * 18}px, ${-mousePosition.y * 18}px) rotate(5deg)`
+                    : 'translate(0, 0) rotate(5deg)',
+                  transition: 'transform 0.85s cubic-bezier(0.33, 1, 0.68, 1)',
+                  animation: 'drift4 7.5s ease-in-out infinite',
+                }}
+              >
+                <div
+                  className="flex items-center gap-2 px-3 py-2"
+                  style={{
+                    backgroundColor: 'var(--bg-white)',
+                    border: '2px solid var(--border-dark)',
+                    borderRadius: '6px',
+                    boxShadow: '3px 3px 0 var(--border-dark)',
+                  }}
+                >
+                  <FileText size={14} style={{ color: 'var(--accent-teal)' }} />
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>contract.pdf</span>
+                </div>
+              </div>
+
+              {/* Chip 5 - Bottom center */}
+              <div
+                className="absolute"
+                style={{
+                  bottom: '10%',
+                  left: '40%',
+                  transform: isHovering
+                    ? `translate(${-mousePosition.x * 12}px, ${-mousePosition.y * 12}px) rotate(-4deg)`
+                    : 'translate(0, 0) rotate(-4deg)',
+                  transition: 'transform 0.9s cubic-bezier(0.33, 1, 0.68, 1)',
+                  animation: 'drift5 6.5s ease-in-out infinite',
+                }}
+              >
+                <div
+                  className="flex items-center gap-2 px-3 py-2"
+                  style={{
+                    backgroundColor: 'var(--bg-white)',
+                    border: '2px solid var(--border-dark)',
+                    borderRadius: '6px',
+                    boxShadow: '3px 3px 0 var(--border-dark)',
+                  }}
+                >
+                  <File size={14} style={{ color: 'var(--bg-peach)' }} />
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>research.pdf</span>
+                </div>
+              </div>
             </div>
-
-            {/* Social proof snippet */}
-            <p className="mt-8 text-sm" style={{ color: 'var(--text-muted)' }}>
-              Free tier includes 50 queries. No credit card needed.
-            </p>
           </div>
         </div>
+
+        {/* CSS Keyframes for drift animations */}
+        <style jsx>{`
+          @keyframes drift1 {
+            0%, 100% { transform: translate(0, 0) rotate(-3deg); }
+            50% { transform: translate(3px, -5px) rotate(-2deg); }
+          }
+          @keyframes drift2 {
+            0%, 100% { transform: translate(0, 0) rotate(4deg); }
+            50% { transform: translate(-4px, 4px) rotate(5deg); }
+          }
+          @keyframes drift3 {
+            0%, 100% { transform: translate(0, 0) rotate(-2deg); }
+            50% { transform: translate(5px, -3px) rotate(-1deg); }
+          }
+          @keyframes drift4 {
+            0%, 100% { transform: translate(0, 0) rotate(5deg); }
+            50% { transform: translate(-3px, -4px) rotate(6deg); }
+          }
+          @keyframes drift5 {
+            0%, 100% { transform: translate(0, 0) rotate(-4deg); }
+            50% { transform: translate(4px, 3px) rotate(-3deg); }
+          }
+        `}</style>
       </section>
 
       {/* Features Section */}

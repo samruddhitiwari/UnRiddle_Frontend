@@ -87,7 +87,8 @@ export default function SessionsPage() {
             )
             if (docsRes.ok) {
                 const data = await docsRes.json()
-                setDocuments(data.filter((d: Document) => d.status === 'ready'))
+                const docsArray = Array.isArray(data) ? data : (data.documents || [])
+                setDocuments(docsArray.filter((d: Document) => d.status === 'ready'))
             }
         } catch (e) {
             console.error('Error fetching documents:', e)
