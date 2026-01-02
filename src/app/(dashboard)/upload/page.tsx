@@ -14,8 +14,20 @@ export default function UploadPage() {
     const [success, setSuccess] = useState(false)
     const [dragActive, setDragActive] = useState(false)
 
+    const [processingStage, setProcessingStage] = useState<string>('')
+
     const router = useRouter()
     const supabase = createClient()
+
+    // Helper to get processing stage description based on progress
+    const getProcessingStage = (progress: number): string => {
+        if (progress < 20) return 'Starting processing...'
+        if (progress < 30) return 'Downloading document...'
+        if (progress < 40) return 'Extracting text from PDF...'
+        if (progress < 50) return 'Cleaning and preparing text...'
+        if (progress < 95) return 'Creating AI embeddings...'
+        return 'Finalizing...'
+    }
 
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault()
@@ -55,11 +67,55 @@ export default function UploadPage() {
         }
     }
 
+    // Poll for document status
+    const pollDocumentStatus = async (documentId: string, accessToken: string): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            const poll = async () => {
+                try {
+                    const response = await fetch(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/${documentId}/status`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`,
+                            },
+                        }
+                    )
+
+                    if (!response.ok) {
+                        throw new Error('Failed to get document status')
+                    }
+
+                    const data = await response.json()
+                    const progress = data.progress_percentage || 0
+
+                    setProgress(progress)
+                    setProcessingStage(getProcessingStage(progress))
+
+                    if (data.status === 'ready') {
+                        setProgress(100)
+                        resolve()
+                    } else if (data.status === 'failed') {
+                        reject(new Error(data.error_message || 'Processing failed'))
+                    } else {
+                        // Continue polling every 2 seconds
+                        setTimeout(poll, 2000)
+                    }
+                } catch (err) {
+                    reject(err)
+                }
+            }
+
+            // Start polling
+            poll()
+        })
+    }
+
     const handleUpload = async () => {
         if (!file) return
 
         setUploading(true)
         setProgress(0)
+        setProcessingStage('Uploading document...')
         setError(null)
 
         try {
@@ -68,16 +124,13 @@ export default function UploadPage() {
                 throw new Error('Please sign in to upload documents')
             }
 
-            // Simulate progress
-            const progressInterval = setInterval(() => {
-                setProgress(prev => Math.min(prev + 10, 90))
-            }, 200)
-
             const formData = new FormData()
             formData.append('file', file)
 
             const { data: { session } } = await supabase.auth.getSession()
 
+            // Upload file
+            setProgress(5)
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/upload`, {
                 method: 'POST',
                 headers: {
@@ -86,15 +139,18 @@ export default function UploadPage() {
                 body: formData,
             })
 
-            clearInterval(progressInterval)
-
             if (!response.ok) {
                 const data = await response.json()
                 throw new Error(data.detail?.message || data.detail || 'Upload failed')
             }
 
             const data = await response.json()
-            setProgress(100)
+            setProgress(10)
+            setProcessingStage('Document uploaded. Starting processing...')
+
+            // Poll for processing status
+            await pollDocumentStatus(data.id, session?.access_token || '')
+
             setSuccess(true)
 
             // Redirect to chat after delay
@@ -105,6 +161,7 @@ export default function UploadPage() {
         } catch (err: any) {
             setError(err.message)
             setProgress(0)
+            setProcessingStage('')
         } finally {
             setUploading(false)
         }
@@ -186,8 +243,9 @@ export default function UploadPage() {
                                         style={{ width: `${progress}%` }}
                                     />
                                 </div>
-                                <div className="text-sm text-slate-400 text-center">
-                                    {progress < 100 ? 'Uploading...' : 'Processing...'}
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-slate-400">{processingStage || 'Processing...'}</span>
+                                    <span className="text-indigo-400 font-medium">{progress}%</span>
                                 </div>
                             </div>
                         )}

@@ -2,9 +2,27 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+    // Public paths that don't need auth checks
+    const publicPaths = ['/', '/pricing', '/terms', '/privacy', '/refund', '/login']
+    const isPublicPath = publicPaths.some(path =>
+        request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith('/auth')
+    )
+
+    // Skip Supabase auth for public paths if env vars are missing
+    const hasSupabaseConfig = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (isPublicPath && !hasSupabaseConfig) {
+        return NextResponse.next({ request })
+    }
+
     let supabaseResponse = NextResponse.next({
         request,
     })
+
+    // Only create Supabase client if config is available
+    if (!hasSupabaseConfig) {
+        return supabaseResponse
+    }
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -61,3 +79,4 @@ export async function updateSession(request: NextRequest) {
 
     return supabaseResponse
 }
+

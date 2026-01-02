@@ -1,179 +1,416 @@
-import Link from 'next/link'
-import { FileText, ArrowRight, Sparkles, Shield, Zap } from 'lucide-react'
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { FileText, ArrowRight, Zap, Search, Shield, MessageSquare } from 'lucide-react';
+import { ReviewCard } from './components/ReviewCard';
+import { ReviewForm } from './components/ReviewForm';
+
+interface Review {
+  id: string;
+  rating: number;
+  review_text: string;
+  reviewer_name: string | null;
+  is_anonymous: boolean;
+}
 
 export default function HomePage() {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(true);
+
+  // Fetch reviews on mount
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiUrl}/reviews?limit=6`);
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(data.reviews || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch reviews:', error);
+    } finally {
+      setIsLoadingReviews(false);
+    }
+  };
+
+  const handleSubmitReview = async (data: {
+    rating: number;
+    reviewText: string;
+    reviewerName: string;
+    isAnonymous: boolean;
+  }) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    // Note: In production, you'd get user_id from auth context
+    const res = await fetch(`${apiUrl}/reviews?user_id=demo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rating: data.rating,
+        review_text: data.reviewText,
+        reviewer_name: data.reviewerName || null,
+        is_anonymous: data.isAnonymous,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Failed to submit review');
+    }
+
+    // Refresh reviews
+    await fetchReviews();
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-cream)' }}>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">Unriddle</span>
+      <nav
+        className="sticky top-0 z-50 px-4 py-4"
+        style={{
+          backgroundColor: 'var(--bg-cream)',
+          borderBottom: '2px solid var(--border-dark)'
+        }}
+      >
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 flex items-center justify-center"
+              style={{
+                backgroundColor: 'var(--accent-coral)',
+                border: '2px solid var(--border-dark)',
+                borderRadius: '8px'
+              }}
+            >
+              <FileText className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
             </div>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/pricing"
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/login"
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/login"
-                className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-colors"
-              >
-                Get Started
-              </Link>
-            </div>
+            <span className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              Unriddle
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-6">
+            <Link
+              href="#features"
+              className="text-sm font-medium hover:underline underline-offset-4"
+              style={{ color: 'var(--text-body)' }}
+            >
+              Features
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-sm font-medium hover:underline underline-offset-4"
+              style={{ color: 'var(--text-body)' }}
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/login"
+              className="text-sm font-medium hover:underline underline-offset-4"
+              style={{ color: 'var(--text-body)' }}
+            >
+              Sign in
+            </Link>
+            <Link href="/login" className="btn-primary text-sm py-2 px-4">
+              Get Started
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-sm mb-8">
-            <Sparkles className="w-4 h-4" />
-            AI-Powered Document Intelligence
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              Chat with your
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Documents
-            </span>
-          </h1>
-
-          <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-            Upload any PDF and have intelligent conversations. Get instant answers,
-            discover insights, and navigate complex documents with AI.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/login"
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold transition-all shadow-lg shadow-indigo-500/30 flex items-center gap-2"
-            >
-              Start for Free <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/pricing"
-              className="px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold transition-all"
-            >
-              View Pricing
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-20 px-4">
+      {/* Hero Section */}
+      <section className="px-4 py-20 md:py-28">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Everything you need for document intelligence
-            </h2>
-            <p className="text-slate-400 text-lg">
-              Powerful features to extract knowledge from your documents
+          <div className="max-w-3xl">
+            {/* Badge */}
+            <div className="badge mb-6">
+              <Zap size={14} />
+              <span>Simple document conversations</span>
+            </div>
+
+            {/* Headline */}
+            <h1 className="heading-xl mb-6">
+              Chat with your<br />
+              <span style={{ color: 'var(--accent-coral)' }}>documents.</span>
+            </h1>
+
+            {/* Subtext */}
+            <p className="body-lg mb-10 max-w-xl">
+              Upload any PDF. Ask questions in plain English.
+              Get answers that cite exactly where they came from.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap gap-4">
+              <Link href="/login" className="btn-primary">
+                Start Free <ArrowRight size={18} />
+              </Link>
+              <Link href="/pricing" className="btn-secondary">
+                View Pricing
+              </Link>
+            </div>
+
+            {/* Social proof snippet */}
+            <p className="mt-8 text-sm" style={{ color: 'var(--text-muted)' }}>
+              Free tier includes 50 queries. No credit card needed.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="px-4 py-20" style={{ backgroundColor: 'var(--bg-white)' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-2xl mb-12">
+            <h2 className="heading-lg mb-4">How it works</h2>
+            <p className="body-lg">
+              No complicated setup. Just upload, ask, and get answers.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 hover:border-indigo-500/30 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-6">
-                <Zap className="w-7 h-7 text-indigo-400" />
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Feature 1 */}
+            <div className="brutalist-card p-8">
+              <div
+                className="w-12 h-12 flex items-center justify-center mb-6"
+                style={{
+                  backgroundColor: 'var(--bg-peach)',
+                  border: '2px solid var(--border-dark)',
+                  borderRadius: '8px'
+                }}
+              >
+                <FileText size={24} style={{ color: 'var(--text-primary)' }} />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Instant Processing</h3>
-              <p className="text-slate-400">
-                Upload your PDF and start chatting in seconds. Our AI processes
-                documents lightning fast.
+              <h3 className="heading-md mb-3">1. Upload your PDF</h3>
+              <p className="body-md">
+                Drag and drop any PDF. We process it in seconds,
+                breaking it into searchable chunks.
               </p>
             </div>
 
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 hover:border-purple-500/30 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6">
-                <Sparkles className="w-7 h-7 text-purple-400" />
+            {/* Feature 2 */}
+            <div className="brutalist-card p-8">
+              <div
+                className="w-12 h-12 flex items-center justify-center mb-6"
+                style={{
+                  backgroundColor: 'var(--bg-mint)',
+                  border: '2px solid var(--border-dark)',
+                  borderRadius: '8px'
+                }}
+              >
+                <Search size={24} style={{ color: 'var(--text-primary)' }} />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Semantic Search</h3>
-              <p className="text-slate-400">
-                Ask questions in natural language. Our AI understands context
-                and finds the most relevant answers.
+              <h3 className="heading-md mb-3">2. Ask anything</h3>
+              <p className="body-md">
+                Type your question naturally. Our search understands
+                meaning, not just keywords.
               </p>
             </div>
 
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 hover:border-emerald-500/30 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-6">
-                <Shield className="w-7 h-7 text-emerald-400" />
+            {/* Feature 3 */}
+            <div className="brutalist-card p-8">
+              <div
+                className="w-12 h-12 flex items-center justify-center mb-6"
+                style={{
+                  backgroundColor: 'var(--bg-lavender)',
+                  border: '2px solid var(--border-dark)',
+                  borderRadius: '8px'
+                }}
+              >
+                <MessageSquare size={24} style={{ color: 'var(--text-primary)' }} />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Secure & Private</h3>
-              <p className="text-slate-400">
+              <h3 className="heading-md mb-3">3. Get cited answers</h3>
+              <p className="body-md">
+                Every answer shows exactly where it came from.
+                Click to jump to the source.
+              </p>
+            </div>
+          </div>
+
+          {/* Additional Features */}
+          <div className="grid md:grid-cols-2 gap-6 mt-6">
+            <div className="brutalist-card p-8">
+              <div
+                className="w-12 h-12 flex items-center justify-center mb-6"
+                style={{
+                  backgroundColor: 'var(--bg-pale-yellow)',
+                  border: '2px solid var(--border-dark)',
+                  borderRadius: '8px'
+                }}
+              >
+                <Zap size={24} style={{ color: 'var(--text-primary)' }} />
+              </div>
+              <h3 className="heading-md mb-3">Fast processing</h3>
+              <p className="body-md">
+                Most documents are ready in under 30 seconds.
+                Large files? Still just a minute or two.
+              </p>
+            </div>
+
+            <div className="brutalist-card p-8">
+              <div
+                className="w-12 h-12 flex items-center justify-center mb-6"
+                style={{
+                  backgroundColor: 'var(--bg-cream)',
+                  border: '2px solid var(--border-dark)',
+                  borderRadius: '8px'
+                }}
+              >
+                <Shield size={24} style={{ color: 'var(--text-primary)' }} />
+              </div>
+              <h3 className="heading-md mb-3">Private by default</h3>
+              <p className="body-md">
                 Your documents are encrypted and never shared.
-                Enterprise-grade security for peace of mind.
+                Delete anytime, no questions asked.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-3xl p-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to unlock your documents?
-            </h2>
-            <p className="text-slate-400 text-lg mb-8">
-              Start with 50 free queries. No credit card required.
+      {/* Reviews Section */}
+      <section className="px-4 py-20" style={{ backgroundColor: 'var(--bg-mint)' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-2xl mb-12">
+            <h2 className="heading-lg mb-4">What people are saying</h2>
+            <p className="body-md" style={{ color: 'var(--text-muted)' }}>
+              Real feedback from people using Unriddle.
             </p>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold transition-all shadow-lg shadow-indigo-500/30"
+          </div>
+
+          {/* Reviews Grid */}
+          {isLoadingReviews ? (
+            <div className="text-center py-12">
+              <p className="body-md">Loading reviews...</p>
+            </div>
+          ) : reviews.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {reviews.map((review) => (
+                <ReviewCard
+                  key={review.id}
+                  rating={review.rating}
+                  reviewText={review.review_text}
+                  reviewerName={review.reviewer_name}
+                  isAnonymous={review.is_anonymous}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="brutalist-card p-8 text-center max-w-md mx-auto">
+              <p className="body-md mb-4">No reviews yet. Be the first!</p>
+            </div>
+          )}
+
+          {/* Leave a Review Button */}
+          <div className="mt-10 text-center">
+            <button
+              onClick={() => setShowReviewForm(true)}
+              className="btn-secondary"
             >
-              Get Started Free <ArrowRight className="w-5 h-5" />
+              Leave a review
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-4 py-20" style={{ backgroundColor: 'var(--bg-peach)' }}>
+        <div className="max-w-6xl mx-auto">
+          <div
+            className="brutalist-card p-12 md:p-16 text-center max-w-3xl mx-auto"
+            style={{ backgroundColor: 'var(--bg-white)' }}
+          >
+            <h2 className="heading-lg mb-4">Ready to try it?</h2>
+            <p className="body-lg mb-8 max-w-lg mx-auto">
+              Start with 50 free queries. Upload your first document
+              and see how it works.
+            </p>
+            <Link href="/login" className="btn-primary inline-flex">
+              Get Started Free <ArrowRight size={18} />
             </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 py-12 px-4">
+      <footer
+        className="px-4 py-12"
+        style={{
+          backgroundColor: 'var(--bg-cream)',
+          borderTop: '2px solid var(--border-dark)'
+        }}
+      >
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <FileText className="w-4 h-4 text-white" />
+              <div
+                className="w-8 h-8 flex items-center justify-center"
+                style={{
+                  backgroundColor: 'var(--accent-coral)',
+                  border: '2px solid var(--border-dark)',
+                  borderRadius: '6px'
+                }}
+              >
+                <FileText className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
               </div>
-              <span className="text-white font-semibold">Unriddle</span>
+              <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
+                Unriddle
+              </span>
             </div>
-            <div className="flex items-center gap-6 text-sm">
-              <Link href="/terms" className="text-slate-400 hover:text-white transition-colors">
-                Terms of Service
+
+            {/* Links */}
+            <div className="flex flex-wrap gap-6 text-sm">
+              <Link
+                href="/terms"
+                className="hover:underline underline-offset-4"
+                style={{ color: 'var(--text-body)' }}
+              >
+                Terms
               </Link>
-              <Link href="/privacy" className="text-slate-400 hover:text-white transition-colors">
-                Privacy Policy
+              <Link
+                href="/privacy"
+                className="hover:underline underline-offset-4"
+                style={{ color: 'var(--text-body)' }}
+              >
+                Privacy
               </Link>
-              <Link href="/refund" className="text-slate-400 hover:text-white transition-colors">
-                Refund Policy
+              <Link
+                href="/refund"
+                className="hover:underline underline-offset-4"
+                style={{ color: 'var(--text-body)' }}
+              >
+                Refunds
+              </Link>
+              <Link
+                href="/pricing"
+                className="hover:underline underline-offset-4"
+                style={{ color: 'var(--text-body)' }}
+              >
+                Pricing
               </Link>
             </div>
           </div>
-          <div className="text-center text-slate-500 text-sm">
-            © {new Date().getFullYear()} Volta Labs. All rights reserved. Payments processed by Paddle.com
+
+          <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--text-muted)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              © {new Date().getFullYear()} Volta Labs. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
+
+      {/* Review Form Modal */}
+      <ReviewForm
+        isOpen={showReviewForm}
+        onClose={() => setShowReviewForm(false)}
+        onSubmit={handleSubmitReview}
+      />
     </div>
-  )
+  );
 }
