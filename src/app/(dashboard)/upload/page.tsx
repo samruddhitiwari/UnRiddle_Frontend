@@ -171,8 +171,10 @@ export default function UploadPage() {
         <div className="max-w-2xl mx-auto space-y-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-white">Upload Document</h1>
-                <p className="text-slate-400 mt-1">Upload a PDF to start chatting with your document</p>
+                <h1 className="heading-lg">Upload Document</h1>
+                <p className="body-md mt-1" style={{ color: 'var(--text-muted)' }}>
+                    Upload a PDF to start chatting with your document
+                </p>
             </div>
 
             {/* Upload Zone */}
@@ -182,25 +184,33 @@ export default function UploadPage() {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
                 className={cn(
-                    "relative border-2 border-dashed rounded-2xl p-12 transition-all",
-                    dragActive
-                        ? "border-indigo-500 bg-indigo-500/10"
-                        : "border-slate-700 hover:border-slate-600",
-                    file && "border-solid border-indigo-500/50 bg-indigo-500/5"
+                    "brutalist-card relative p-12 transition-all",
+                    dragActive && "translate-x-[-2px] translate-y-[-2px]"
                 )}
+                style={{
+                    backgroundColor: file ? 'var(--bg-mint)' : 'var(--bg-white)',
+                    borderStyle: file ? 'solid' : 'dashed'
+                }}
             >
                 {!file ? (
                     <div className="text-center">
-                        <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-800 flex items-center justify-center mb-6">
-                            <Upload className="w-8 h-8 text-slate-400" />
+                        <div
+                            className="w-16 h-16 mx-auto flex items-center justify-center mb-6"
+                            style={{
+                                backgroundColor: 'var(--bg-cream)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '12px'
+                            }}
+                        >
+                            <Upload className="w-8 h-8" style={{ color: 'var(--text-body)' }} />
                         </div>
-                        <h3 className="text-lg font-semibold text-white mb-2">
+                        <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
                             Drop your PDF here
                         </h3>
-                        <p className="text-slate-400 mb-6">
+                        <p className="mb-6" style={{ color: 'var(--text-body)' }}>
                             or click to browse from your computer
                         </p>
-                        <label className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-medium cursor-pointer transition-colors">
+                        <label className="btn-primary cursor-pointer inline-flex">
                             <Upload className="w-5 h-5" />
                             Choose File
                             <input
@@ -210,24 +220,35 @@ export default function UploadPage() {
                                 className="hidden"
                             />
                         </label>
-                        <p className="text-sm text-slate-500 mt-4">
+                        <p className="text-sm mt-4" style={{ color: 'var(--text-muted)' }}>
                             Maximum file size: 10MB for Free, 50MB for Pro
                         </p>
                     </div>
                 ) : (
                     <div className="space-y-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                                <File className="w-7 h-7 text-indigo-400" />
+                            <div
+                                className="w-14 h-14 flex items-center justify-center"
+                                style={{
+                                    backgroundColor: 'var(--bg-white)',
+                                    border: '2px solid var(--border-dark)',
+                                    borderRadius: '12px'
+                                }}
+                            >
+                                <File className="w-7 h-7" style={{ color: 'var(--accent-coral)' }} />
                             </div>
                             <div className="flex-1">
-                                <div className="text-white font-medium">{file.name}</div>
-                                <div className="text-sm text-slate-400">{formatBytes(file.size)}</div>
+                                <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{file.name}</div>
+                                <div className="text-sm" style={{ color: 'var(--text-body)' }}>{formatBytes(file.size)}</div>
                             </div>
                             {!uploading && !success && (
                                 <button
                                     onClick={() => setFile(null)}
-                                    className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                                    className="p-2 rounded-lg hover:bg-white/50 transition-colors"
+                                    style={{
+                                        border: '1.5px solid var(--border-dark)',
+                                        color: 'var(--text-body)'
+                                    }}
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
@@ -237,24 +258,40 @@ export default function UploadPage() {
                         {/* Progress Bar */}
                         {uploading && (
                             <div className="space-y-2">
-                                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                <div
+                                    className="h-3 rounded-full overflow-hidden"
+                                    style={{
+                                        backgroundColor: 'var(--bg-white)',
+                                        border: '2px solid var(--border-dark)'
+                                    }}
+                                >
                                     <div
-                                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
-                                        style={{ width: `${progress}%` }}
+                                        className="h-full transition-all duration-300"
+                                        style={{
+                                            backgroundColor: 'var(--accent-coral)',
+                                            width: `${progress}%`
+                                        }}
                                     />
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-400">{processingStage || 'Processing...'}</span>
-                                    <span className="text-indigo-400 font-medium">{progress}%</span>
+                                    <span style={{ color: 'var(--text-body)' }}>{processingStage || 'Processing...'}</span>
+                                    <span className="font-semibold" style={{ color: 'var(--accent-coral)' }}>{progress}%</span>
                                 </div>
                             </div>
                         )}
 
                         {/* Success Message */}
                         {success && (
-                            <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-                                <CheckCircle className="w-5 h-5 text-emerald-400" />
-                                <span className="text-emerald-400">Upload successful! Redirecting to chat...</span>
+                            <div
+                                className="flex items-center gap-3 p-4"
+                                style={{
+                                    backgroundColor: 'var(--bg-white)',
+                                    border: '2px solid var(--border-dark)',
+                                    borderRadius: '8px'
+                                }}
+                            >
+                                <CheckCircle className="w-5 h-5" style={{ color: 'var(--accent-teal)' }} />
+                                <span style={{ color: 'var(--text-primary)' }}>Upload successful! Redirecting to chat...</span>
                             </div>
                         )}
 
@@ -262,7 +299,7 @@ export default function UploadPage() {
                         {!uploading && !success && (
                             <button
                                 onClick={handleUpload}
-                                className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold transition-all shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2"
+                                className="btn-primary w-full justify-center"
                             >
                                 <Upload className="w-5 h-5" />
                                 Upload & Process
@@ -274,32 +311,44 @@ export default function UploadPage() {
 
             {/* Error Message */}
             {error && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
-                    <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                    <span className="text-red-400">{error}</span>
+                <div
+                    className="flex items-center gap-3 p-4"
+                    style={{
+                        backgroundColor: '#FFF0F0',
+                        border: '2px solid #FF6B6B',
+                        borderRadius: '8px'
+                    }}
+                >
+                    <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#CC0000' }} />
+                    <span style={{ color: '#CC0000' }}>{error}</span>
                 </div>
             )}
 
             {/* Info */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-white font-semibold mb-3">What happens next?</h3>
-                <ul className="space-y-2 text-slate-400 text-sm">
-                    <li className="flex items-start gap-2">
-                        <span className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">1</span>
-                        Your PDF is securely uploaded and stored
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">2</span>
-                        We extract and process the text content
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">3</span>
-                        AI creates searchable embeddings for fast retrieval
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">4</span>
-                        Start chatting with your document instantly
-                    </li>
+            <div className="brutalist-card p-6" style={{ backgroundColor: 'var(--bg-white)' }}>
+                <h3 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>What happens next?</h3>
+                <ul className="space-y-2 text-sm" style={{ color: 'var(--text-body)' }}>
+                    {[
+                        'Your PDF is securely uploaded and stored',
+                        'We extract and process the text content',
+                        'AI creates searchable embeddings for fast retrieval',
+                        'Start chatting with your document instantly'
+                    ].map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                            <span
+                                className="w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
+                                style={{
+                                    backgroundColor: 'var(--bg-peach)',
+                                    border: '1.5px solid var(--border-dark)',
+                                    borderRadius: '4px',
+                                    color: 'var(--text-primary)'
+                                }}
+                            >
+                                {idx + 1}
+                            </span>
+                            {item}
+                        </li>
+                    ))}
                 </ul>
             </div>
         </div>

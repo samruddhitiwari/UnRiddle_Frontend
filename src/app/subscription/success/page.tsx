@@ -30,54 +30,64 @@ export default function SubscriptionSuccessPage() {
     }, [router])
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex items-center justify-center px-4">
+        <div
+            className="min-h-screen flex items-center justify-center px-4"
+            style={{ backgroundColor: 'var(--bg-cream)' }}
+        >
             <div className="max-w-md w-full text-center">
-                <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle className="w-10 h-10 text-emerald-400" />
+                <div
+                    className="w-20 h-20 flex items-center justify-center mx-auto mb-6"
+                    style={{
+                        backgroundColor: 'var(--bg-mint)',
+                        border: '3px solid var(--border-dark)',
+                        borderRadius: '50%'
+                    }}
+                >
+                    <CheckCircle className="w-10 h-10" style={{ color: 'var(--accent-teal)' }} />
                 </div>
 
-                <h1 className="text-3xl font-bold text-white mb-4">
+                <h1 className="heading-lg mb-4">
                     Payment Received!
                 </h1>
 
-                <p className="text-slate-400 mb-6">
+                <p className="mb-6" style={{ color: 'var(--text-body)' }}>
                     Thank you for your purchase. Your payment is being processed and your account will be upgraded shortly.
                 </p>
 
                 {/* Processing Notice */}
-                <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 mb-6">
-                    <div className="flex items-center justify-center gap-2 text-amber-400 mb-2">
+                <div
+                    className="brutalist-card p-4 mb-6"
+                    style={{ backgroundColor: 'var(--bg-pale-yellow)' }}
+                >
+                    <div className="flex items-center justify-center gap-2 mb-2" style={{ color: 'var(--text-primary)' }}>
                         <AlertTriangle className="w-4 h-4" />
-                        <span className="font-medium text-sm">Processing may take a moment</span>
+                        <span className="font-semibold text-sm">Processing may take a moment</span>
                     </div>
-                    <p className="text-slate-500 text-sm">
+                    <p className="text-sm" style={{ color: 'var(--text-body)' }}>
                         If your plan hasn&apos;t updated after a few minutes, please refresh the page or contact support.
                     </p>
                 </div>
 
-                <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 mb-8">
-                    <div className="flex items-center justify-center gap-2 text-slate-400">
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                <div
+                    className="brutalist-card p-6 mb-8"
+                    style={{ backgroundColor: 'var(--bg-white)' }}
+                >
+                    <div className="flex items-center justify-center gap-2" style={{ color: 'var(--text-body)' }}>
+                        <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--accent-coral)' }} />
                         <span>Redirecting to dashboard in {countdown}...</span>
                     </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link
-                        href="/dashboard"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold transition-all"
-                    >
+                    <Link href="/dashboard" className="btn-primary">
                         Go to Dashboard
                     </Link>
-                    <Link
-                        href="/subscription"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium transition-all"
-                    >
+                    <Link href="/subscription" className="btn-secondary">
                         View Subscription
                     </Link>
                 </div>
 
-                <p className="mt-8 text-slate-500 text-sm">
+                <p className="mt-8 text-sm" style={{ color: 'var(--text-muted)' }}>
                     Questions? Contact us at support@unriddle.voltalabs.space
                 </p>
             </div>

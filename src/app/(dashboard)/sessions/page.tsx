@@ -157,7 +157,7 @@ export default function SessionsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-[60vh]">
-                <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+                <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--accent-coral)' }} />
             </div>
         )
     }
@@ -167,12 +167,12 @@ export default function SessionsPage() {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Multi-PDF Sessions</h1>
-                    <p className="text-slate-400">Chat with multiple documents in a single conversation</p>
+                    <h1 className="heading-lg mb-2">Multi-PDF Sessions</h1>
+                    <p style={{ color: 'var(--text-muted)' }}>Chat with multiple documents in a single conversation</p>
                 </div>
                 <button
                     onClick={() => isPaidUser ? setShowCreateModal(true) : router.push('/subscription')}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium hover:from-indigo-600 hover:to-purple-700 transition-all"
+                    className="btn-primary"
                 >
                     {isPaidUser ? (
                         <>
@@ -190,21 +190,31 @@ export default function SessionsPage() {
 
             {/* Free User Banner */}
             {!isPaidUser && (
-                <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/30">
+                <div
+                    className="brutalist-card mb-8 p-6"
+                    style={{ backgroundColor: 'var(--bg-lavender)' }}
+                >
                     <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                            <Sparkles className="w-6 h-6 text-indigo-400" />
+                        <div
+                            className="w-12 h-12 flex items-center justify-center flex-shrink-0"
+                            style={{
+                                backgroundColor: 'var(--bg-white)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '8px'
+                            }}
+                        >
+                            <Sparkles className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-white mb-2">
+                            <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
                                 Unlock Multi-PDF Sessions
                             </h3>
-                            <p className="text-slate-400 mb-4">
+                            <p className="mb-4" style={{ color: 'var(--text-body)' }}>
                                 Chat across multiple documents simultaneously. Perfect for research, studying, and comparing content.
                             </p>
                             <Link
                                 href="/subscription"
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors"
+                                className="btn-primary inline-flex text-sm"
                             >
                                 Upgrade Now
                                 <ChevronRight className="w-4 h-4" />
@@ -220,21 +230,32 @@ export default function SessionsPage() {
                     {sessions.map((session) => (
                         <div
                             key={session.id}
-                            className="group p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-indigo-500/50 transition-all"
+                            className="brutalist-card group p-4"
+                            style={{ backgroundColor: 'var(--bg-white)' }}
                         >
                             <div className="flex items-center justify-between">
                                 <Link
                                     href={`/sessions/${session.id}`}
                                     className="flex-1 flex items-center gap-4"
                                 >
-                                    <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                                        <MessageSquare className="w-6 h-6 text-indigo-400" />
+                                    <div
+                                        className="w-12 h-12 flex items-center justify-center"
+                                        style={{
+                                            backgroundColor: 'var(--bg-mint)',
+                                            border: '2px solid var(--border-dark)',
+                                            borderRadius: '8px'
+                                        }}
+                                    >
+                                        <MessageSquare className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-white font-medium group-hover:text-indigo-400 transition-colors">
+                                        <h3
+                                            className="font-medium group-hover:underline underline-offset-4"
+                                            style={{ color: 'var(--text-primary)' }}
+                                        >
                                             {session.name}
                                         </h3>
-                                        <div className="flex items-center gap-3 text-sm text-slate-400">
+                                        <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-muted)' }}>
                                             <span className="flex items-center gap-1">
                                                 <FileText className="w-3 h-3" />
                                                 {session.document_count} document{session.document_count !== 1 ? 's' : ''}
@@ -245,11 +266,15 @@ export default function SessionsPage() {
                                             </span>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+                                    <ChevronRight className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
                                 </Link>
                                 <button
                                     onClick={() => handleDeleteSession(session.id)}
-                                    className="ml-4 p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
+                                    className="ml-4 p-2 rounded-lg hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                                    style={{
+                                        border: '1.5px solid transparent',
+                                        color: 'var(--text-muted)'
+                                    }}
                                 >
                                     <Trash2 className="w-5 h-5" />
                                 </button>
@@ -258,13 +283,16 @@ export default function SessionsPage() {
                     ))}
                 </div>
             ) : isPaidUser ? (
-                <div className="text-center py-16">
-                    <MessageSquare className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-                    <h3 className="text-lg font-semibold text-white mb-2">No sessions yet</h3>
-                    <p className="text-slate-400 mb-6">Create your first multi-PDF session to get started</p>
+                <div
+                    className="brutalist-card text-center py-16"
+                    style={{ backgroundColor: 'var(--bg-white)' }}
+                >
+                    <MessageSquare className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+                    <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No sessions yet</h3>
+                    <p className="mb-6" style={{ color: 'var(--text-body)' }}>Create your first multi-PDF session to get started</p>
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors"
+                        className="btn-primary inline-flex"
                     >
                         <Plus className="w-5 h-5" />
                         Create Session
@@ -274,39 +302,48 @@ export default function SessionsPage() {
 
             {/* Create Session Modal */}
             {showCreateModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                    <div className="w-full max-w-lg mx-4 bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl">
-                        <div className="p-6 border-b border-slate-700">
-                            <h2 className="text-xl font-semibold text-white">Create New Session</h2>
-                            <p className="text-slate-400 text-sm">Select documents to include in this session</p>
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    style={{ backgroundColor: 'rgba(255, 251, 245, 0.95)' }}
+                >
+                    <div className="brutalist-card w-full max-w-lg" style={{ backgroundColor: 'var(--bg-white)' }}>
+                        <div className="p-6" style={{ borderBottom: '2px solid var(--border-dark)' }}>
+                            <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Create New Session</h2>
+                            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Select documents to include in this session</p>
                         </div>
 
                         <div className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm text-slate-400 mb-2">Session Name</label>
+                                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-body)' }}>Session Name</label>
                                 <input
                                     type="text"
                                     value={sessionName}
                                     onChange={(e) => setSessionName(e.target.value)}
                                     placeholder="My Research Session"
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    className="w-full px-4 py-3 focus:outline-none"
+                                    style={{
+                                        backgroundColor: 'var(--bg-white)',
+                                        border: '2px solid var(--border-dark)',
+                                        borderRadius: '8px',
+                                        color: 'var(--text-primary)'
+                                    }}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-slate-400 mb-2">
+                                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-body)' }}>
                                     Select Documents ({selectedDocs.length} selected)
                                 </label>
                                 <div className="max-h-64 overflow-y-auto space-y-2">
                                     {documents.map((doc) => (
                                         <label
                                             key={doc.id}
-                                            className={cn(
-                                                "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors",
-                                                selectedDocs.includes(doc.id)
-                                                    ? "bg-indigo-500/20 border border-indigo-500/50"
-                                                    : "bg-slate-800 border border-slate-700 hover:border-slate-600"
-                                            )}
+                                            className="flex items-center gap-3 p-3 cursor-pointer transition-colors"
+                                            style={{
+                                                backgroundColor: selectedDocs.includes(doc.id) ? 'var(--bg-mint)' : 'var(--bg-cream)',
+                                                border: '2px solid var(--border-dark)',
+                                                borderRadius: '8px'
+                                            }}
                                         >
                                             <input
                                                 type="checkbox"
@@ -318,22 +355,11 @@ export default function SessionsPage() {
                                                         setSelectedDocs(selectedDocs.filter(id => id !== doc.id))
                                                     }
                                                 }}
-                                                className="sr-only"
+                                                className="w-5 h-5"
+                                                style={{ accentColor: 'var(--accent-coral)' }}
                                             />
-                                            <div className={cn(
-                                                "w-5 h-5 rounded border-2 flex items-center justify-center",
-                                                selectedDocs.includes(doc.id)
-                                                    ? "bg-indigo-500 border-indigo-500"
-                                                    : "border-slate-600"
-                                            )}>
-                                                {selectedDocs.includes(doc.id) && (
-                                                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                    </svg>
-                                                )}
-                                            </div>
-                                            <FileText className="w-4 h-4 text-slate-400" />
-                                            <span className="text-white text-sm truncate">
+                                            <FileText className="w-4 h-4" style={{ color: 'var(--text-body)' }} />
+                                            <span className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>
                                                 {doc.file_path.split('/').pop()}
                                             </span>
                                         </label>
@@ -342,21 +368,21 @@ export default function SessionsPage() {
                             </div>
                         </div>
 
-                        <div className="p-6 border-t border-slate-700 flex items-center justify-end gap-3">
+                        <div className="p-6 flex items-center justify-end gap-3" style={{ borderTop: '2px solid var(--border-dark)' }}>
                             <button
                                 onClick={() => {
                                     setShowCreateModal(false)
                                     setSelectedDocs([])
                                     setSessionName('')
                                 }}
-                                className="px-4 py-2 rounded-lg text-slate-400 hover:text-white transition-colors"
+                                className="btn-secondary text-sm py-2 px-4"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleCreateSession}
                                 disabled={selectedDocs.length === 0 || creating}
-                                className="px-4 py-2 rounded-lg bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors disabled:opacity-50"
+                                className="btn-primary text-sm py-2 px-4 disabled:opacity-50"
                             >
                                 {creating ? (
                                     <Loader2 className="w-5 h-5 animate-spin" />

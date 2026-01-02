@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/client'
 import {
     Send, Loader2, FileText, ArrowLeft, AlertCircle, Bot, User,
     Sparkles, BookOpen, HelpCircle, GraduationCap, Briefcase,
-    Shield, ShieldCheck, ShieldAlert, Download, Zap, Lock,
-    FileDown, ChevronDown, ChevronUp
+    Shield, ShieldCheck, ShieldAlert, Zap, Lock,
+    ChevronDown, ChevronUp
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -147,7 +147,6 @@ export default function ChatPage() {
                 throw new Error(data.detail || 'Processing failed')
             }
 
-            const data = await response.json()
             setDocument({ ...document, status: 'ready' })
         } catch (err: any) {
             setError(err.message)
@@ -312,12 +311,12 @@ export default function ChatPage() {
         }
     }
 
-    const getConfidenceColor = (confidence: string) => {
+    const getConfidenceStyle = (confidence: string) => {
         switch (confidence) {
-            case 'high': return 'text-emerald-400 bg-emerald-500/20'
-            case 'medium': return 'text-amber-400 bg-amber-500/20'
-            case 'low': return 'text-red-400 bg-red-500/20'
-            default: return 'text-slate-400 bg-slate-500/20'
+            case 'high': return { bg: 'var(--bg-mint)', color: 'var(--accent-teal)' }
+            case 'medium': return { bg: 'var(--bg-pale-yellow)', color: 'var(--text-primary)' }
+            case 'low': return { bg: '#FFF0F0', color: '#CC0000' }
+            default: return { bg: 'var(--bg-cream)', color: 'var(--text-muted)' }
         }
     }
 
@@ -333,13 +332,10 @@ export default function ChatPage() {
     if (error && !document) {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh]">
-                <AlertCircle className="w-16 h-16 text-red-400 mb-4" />
-                <h2 className="text-xl font-semibold text-white mb-2">Document not found</h2>
-                <p className="text-slate-400 mb-6">This document may have been deleted or you don't have access.</p>
-                <Link
-                    href="/dashboard"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
-                >
+                <AlertCircle className="w-16 h-16 mb-4" style={{ color: '#CC0000' }} />
+                <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Document not found</h2>
+                <p className="mb-6" style={{ color: 'var(--text-body)' }}>This document may have been deleted or you don&apos;t have access.</p>
+                <Link href="/dashboard" className="btn-primary">
                     <ArrowLeft className="w-4 h-4" />
                     Back to Dashboard
                 </Link>
@@ -350,28 +346,45 @@ export default function ChatPage() {
     return (
         <div className="flex flex-col h-[calc(100vh-8rem)]">
             {/* Header with Intelligence Mode */}
-            <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div
+                className="flex items-center justify-between gap-4 pb-4"
+                style={{ borderBottom: '2px solid var(--border-dark)' }}
+            >
                 <div className="flex items-center gap-4">
                     <Link
                         href="/dashboard"
-                        className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        style={{
+                            border: '2px solid var(--border-dark)',
+                            color: 'var(--text-body)'
+                        }}
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-indigo-400" />
+                        <div
+                            className="w-10 h-10 flex items-center justify-center"
+                            style={{
+                                backgroundColor: 'var(--bg-peach)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '8px'
+                            }}
+                        >
+                            <FileText className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                         </div>
                         <div>
-                            <h1 className="text-white font-semibold">
+                            <h1 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                                 {document?.file_path?.split('/').pop() || 'Document'}
                             </h1>
-                            <div className={cn(
-                                "text-xs px-2 py-0.5 rounded-full inline-block",
-                                document?.status === 'ready'
-                                    ? "bg-emerald-500/20 text-emerald-400"
-                                    : "bg-amber-500/20 text-amber-400"
-                            )}>
+                            <div
+                                className="text-xs px-2 py-0.5 inline-block font-semibold"
+                                style={{
+                                    backgroundColor: document?.status === 'ready' ? 'var(--bg-mint)' : 'var(--bg-pale-yellow)',
+                                    border: '1.5px solid var(--border-dark)',
+                                    borderRadius: '4px',
+                                    color: 'var(--text-primary)'
+                                }}
+                            >
                                 {document?.status || 'loading'}
                             </div>
                         </div>
@@ -384,12 +397,13 @@ export default function ChatPage() {
                     <div className="relative">
                         <button
                             onClick={() => setShowModeSelector(!showModeSelector)}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all",
-                                intelligenceMode !== 'default'
-                                    ? "bg-indigo-500/20 text-indigo-400"
-                                    : "bg-slate-800 text-slate-400 hover:text-white"
-                            )}
+                            className="flex items-center gap-2 px-3 py-2 text-sm transition-all"
+                            style={{
+                                backgroundColor: intelligenceMode !== 'default' ? 'var(--bg-mint)' : 'var(--bg-white)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '8px',
+                                color: 'var(--text-primary)'
+                            }}
                         >
                             <Sparkles className="w-4 h-4" />
                             <span className="hidden sm:inline">
@@ -399,7 +413,10 @@ export default function ChatPage() {
                         </button>
 
                         {showModeSelector && (
-                            <div className="absolute right-0 top-full mt-2 w-64 bg-slate-800 rounded-xl border border-slate-700 shadow-xl z-50">
+                            <div
+                                className="brutalist-card absolute right-0 top-full mt-2 w-64 z-50"
+                                style={{ backgroundColor: 'var(--bg-white)' }}
+                            >
                                 {INTELLIGENCE_MODES.map((mode) => {
                                     const ModeIcon = mode.icon
                                     const needsPremium = mode.id !== 'default' && !isPaidUser
@@ -414,28 +431,23 @@ export default function ChatPage() {
                                                     setShowModeSelector(false)
                                                 }
                                             }}
-                                            className={cn(
-                                                "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-700/50 transition-colors first:rounded-t-xl last:rounded-b-xl",
-                                                intelligenceMode === mode.id ? "bg-indigo-500/20" : ""
-                                            )}
+                                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                                            style={{
+                                                backgroundColor: intelligenceMode === mode.id ? 'var(--bg-mint)' : 'transparent',
+                                                borderBottom: '1px solid var(--border-dark)'
+                                            }}
                                         >
-                                            <ModeIcon className={cn(
-                                                "w-5 h-5",
-                                                intelligenceMode === mode.id ? "text-indigo-400" : "text-slate-400"
-                                            )} />
+                                            <ModeIcon className="w-5 h-5" style={{ color: 'var(--text-body)' }} />
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className={cn(
-                                                        "font-medium",
-                                                        intelligenceMode === mode.id ? "text-indigo-400" : "text-white"
-                                                    )}>
+                                                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                                                         {mode.name}
                                                     </span>
                                                     {needsPremium && (
-                                                        <Lock className="w-3 h-3 text-amber-400" />
+                                                        <Lock className="w-3 h-3" style={{ color: 'var(--accent-coral)' }} />
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-slate-500">{mode.description}</p>
+                                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{mode.description}</p>
                                             </div>
                                         </button>
                                     )
@@ -449,7 +461,7 @@ export default function ChatPage() {
                         <button
                             onClick={() => setShowGenerateMenu(!showGenerateMenu)}
                             disabled={document?.status !== 'ready'}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm hover:from-indigo-600 hover:to-purple-700 transition-all disabled:opacity-50"
+                            className="btn-primary text-sm py-2 px-3 disabled:opacity-50"
                         >
                             {generating ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -460,7 +472,10 @@ export default function ChatPage() {
                         </button>
 
                         {showGenerateMenu && (
-                            <div className="absolute right-0 top-full mt-2 w-48 bg-slate-800 rounded-xl border border-slate-700 shadow-xl z-50">
+                            <div
+                                className="brutalist-card absolute right-0 top-full mt-2 w-48 z-50"
+                                style={{ backgroundColor: 'var(--bg-white)' }}
+                            >
                                 {[
                                     { id: 'notes', name: 'Study Notes', icon: BookOpen },
                                     { id: 'flashcards', name: 'Flashcards', icon: FileText },
@@ -473,11 +488,15 @@ export default function ChatPage() {
                                             key={item.id}
                                             onClick={() => handleGenerate(item.id)}
                                             disabled={generating !== null}
-                                            className="w-full flex items-center gap-3 px-4 py-3 text-left text-white hover:bg-slate-700/50 transition-colors first:rounded-t-xl last:rounded-b-xl disabled:opacity-50"
+                                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                                            style={{
+                                                color: 'var(--text-primary)',
+                                                borderBottom: '1px solid var(--border-dark)'
+                                            }}
                                         >
-                                            <ItemIcon className="w-4 h-4 text-indigo-400" />
+                                            <ItemIcon className="w-4 h-4" style={{ color: 'var(--accent-coral)' }} />
                                             <span>{item.name}</span>
-                                            {!isPaidUser && <Lock className="w-3 h-3 text-amber-400 ml-auto" />}
+                                            {!isPaidUser && <Lock className="w-3 h-3 ml-auto" style={{ color: 'var(--accent-coral)' }} />}
                                         </button>
                                     )
                                 })}
@@ -490,18 +509,24 @@ export default function ChatPage() {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto py-6 space-y-6">
                 {messages.length === 0 && !loading && (
-                    <div className="text-center text-slate-400 py-12">
+                    <div className="text-center py-12" style={{ color: 'var(--text-body)' }}>
                         {document?.status === 'ready' ? (
                             <>
-                                <Bot className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-                                <h3 className="text-lg font-semibold text-white mb-2">Start a conversation</h3>
+                                <Bot className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+                                <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Start a conversation</h3>
                                 <p className="mb-4">Ask any question about your document</p>
                                 <div className="flex flex-wrap justify-center gap-2 max-w-lg mx-auto">
                                     {['Summarize this document', 'What are the key points?', 'Explain the main concepts'].map((suggestion) => (
                                         <button
                                             key={suggestion}
                                             onClick={() => setInput(suggestion)}
-                                            className="px-3 py-1.5 text-sm rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
+                                            className="px-3 py-1.5 text-sm transition-colors"
+                                            style={{
+                                                backgroundColor: 'var(--bg-white)',
+                                                border: '2px solid var(--border-dark)',
+                                                borderRadius: '999px',
+                                                color: 'var(--text-primary)'
+                                            }}
                                         >
                                             {suggestion}
                                         </button>
@@ -510,21 +535,21 @@ export default function ChatPage() {
                             </>
                         ) : document?.status === 'failed' ? (
                             <>
-                                <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-400" />
-                                <h3 className="text-lg font-semibold text-white mb-2">Processing Failed</h3>
+                                <AlertCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#CC0000' }} />
+                                <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Processing Failed</h3>
                                 <p className="mb-4">{document?.error_message || 'An error occurred while processing'}</p>
                                 <button
                                     onClick={handleProcessDocument}
                                     disabled={processing}
-                                    className="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-medium transition-all disabled:opacity-50"
+                                    className="btn-primary disabled:opacity-50"
                                 >
                                     {processing ? 'Retrying...' : 'Retry Processing'}
                                 </button>
                             </>
                         ) : (
                             <>
-                                <Loader2 className="w-16 h-16 mx-auto mb-4 text-indigo-400 animate-spin" />
-                                <h3 className="text-lg font-semibold text-white mb-2">
+                                <Loader2 className="w-16 h-16 mx-auto mb-4 animate-spin" style={{ color: 'var(--accent-coral)' }} />
+                                <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
                                     Document is {document?.status || 'loading'}...
                                 </h3>
                                 <p className="mb-4">This may take a minute for large documents</p>
@@ -532,7 +557,7 @@ export default function ChatPage() {
                                     <button
                                         onClick={handleProcessDocument}
                                         disabled={processing}
-                                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all disabled:opacity-50"
+                                        className="btn-primary disabled:opacity-50"
                                     >
                                         {processing ? 'Processing...' : document?.status === 'indexing' ? 'Retry Processing' : 'Process Now'}
                                     </button>
@@ -551,17 +576,26 @@ export default function ChatPage() {
                         )}
                     >
                         {message.role === 'assistant' && (
-                            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                                <Bot className="w-4 h-4 text-indigo-400" />
+                            <div
+                                className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+                                style={{
+                                    backgroundColor: 'var(--bg-mint)',
+                                    border: '2px solid var(--border-dark)',
+                                    borderRadius: '8px'
+                                }}
+                            >
+                                <Bot className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                             </div>
                         )}
                         <div
-                            className={cn(
-                                "max-w-[80%] rounded-2xl px-4 py-3",
-                                message.role === 'user'
-                                    ? "bg-indigo-500 text-white"
-                                    : "bg-slate-800 text-slate-200"
-                            )}
+                            className="max-w-[80%] px-4 py-3"
+                            style={{
+                                backgroundColor: message.role === 'user' ? 'var(--accent-coral)' : 'var(--bg-white)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '12px',
+                                boxShadow: 'var(--shadow-offset-sm)',
+                                color: 'var(--text-primary)'
+                            }}
                         >
                             <div className="whitespace-pre-wrap">{message.content}</div>
 
@@ -570,11 +604,17 @@ export default function ChatPage() {
                                 <div className="mt-3 flex items-center gap-2">
                                     {(() => {
                                         const ConfIcon = getConfidenceIcon(message.confidence)
+                                        const style = getConfidenceStyle(message.confidence)
                                         return (
-                                            <span className={cn(
-                                                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs",
-                                                getConfidenceColor(message.confidence)
-                                            )}>
+                                            <span
+                                                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold"
+                                                style={{
+                                                    backgroundColor: style.bg,
+                                                    border: '1.5px solid var(--border-dark)',
+                                                    borderRadius: '4px',
+                                                    color: style.color
+                                                }}
+                                            >
                                                 <ConfIcon className="w-3 h-3" />
                                                 {message.confidence.charAt(0).toUpperCase() + message.confidence.slice(1)} confidence
                                             </span>
@@ -585,17 +625,26 @@ export default function ChatPage() {
 
                             {/* Grounding Warning */}
                             {message.groundingWarning && (
-                                <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs">
+                                <div
+                                    className="mt-2 p-2 text-xs"
+                                    style={{
+                                        backgroundColor: 'var(--bg-pale-yellow)',
+                                        border: '1.5px solid var(--border-dark)',
+                                        borderRadius: '6px',
+                                        color: 'var(--text-primary)'
+                                    }}
+                                >
                                     ⚠️ {message.groundingWarning}
                                 </div>
                             )}
 
                             {/* Sources */}
                             {message.sources && message.sources.length > 0 && (
-                                <div className="mt-3 pt-3 border-t border-slate-700">
+                                <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border-dark)' }}>
                                     <button
                                         onClick={() => setShowSources(showSources === message.id ? null : message.id)}
-                                        className="text-xs text-indigo-400 hover:text-indigo-300"
+                                        className="text-xs font-medium hover:underline underline-offset-4"
+                                        style={{ color: 'var(--accent-coral)' }}
                                     >
                                         {showSources === message.id ? 'Hide sources' : `View ${message.sources.length} source${message.sources.length > 1 ? 's' : ''}`}
                                     </button>
@@ -605,12 +654,18 @@ export default function ChatPage() {
                                             {message.sources.map((source, idx) => (
                                                 <div
                                                     key={idx}
-                                                    className="text-xs p-2 bg-slate-900 rounded-lg text-slate-400"
+                                                    className="text-xs p-2"
+                                                    style={{
+                                                        backgroundColor: 'var(--bg-cream)',
+                                                        border: '1px solid var(--border-dark)',
+                                                        borderRadius: '6px',
+                                                        color: 'var(--text-body)'
+                                                    }}
                                                 >
-                                                    <div className="flex items-center gap-2 text-indigo-400 mb-1">
+                                                    <div className="flex items-center gap-2 mb-1 font-medium" style={{ color: 'var(--accent-coral)' }}>
                                                         <span>Relevance: {(source.similarity * 100).toFixed(1)}%</span>
                                                         {source.page_number && (
-                                                            <span className="text-slate-500">• Page {source.page_number}</span>
+                                                            <span style={{ color: 'var(--text-muted)' }}>• Page {source.page_number}</span>
                                                         )}
                                                     </div>
                                                     <div className="line-clamp-3">{source.text}</div>
@@ -622,8 +677,15 @@ export default function ChatPage() {
                             )}
                         </div>
                         {message.role === 'user' && (
-                            <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                                <User className="w-4 h-4 text-purple-400" />
+                            <div
+                                className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+                                style={{
+                                    backgroundColor: 'var(--bg-lavender)',
+                                    border: '2px solid var(--border-dark)',
+                                    borderRadius: '8px'
+                                }}
+                            >
+                                <User className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                             </div>
                         )}
                     </div>
@@ -632,10 +694,25 @@ export default function ChatPage() {
                 {/* Streaming response */}
                 {streamingContent && (
                     <div className="flex gap-4">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                            <Bot className="w-4 h-4 text-indigo-400" />
+                        <div
+                            className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+                            style={{
+                                backgroundColor: 'var(--bg-mint)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '8px'
+                            }}
+                        >
+                            <Bot className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                         </div>
-                        <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-slate-800 text-slate-200">
+                        <div
+                            className="max-w-[80%] px-4 py-3"
+                            style={{
+                                backgroundColor: 'var(--bg-white)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '12px',
+                                color: 'var(--text-primary)'
+                            }}
+                        >
                             <div className="whitespace-pre-wrap">{streamingContent}</div>
                         </div>
                     </div>
@@ -643,11 +720,25 @@ export default function ChatPage() {
 
                 {loading && !streamingContent && (
                     <div className="flex gap-4">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                            <Bot className="w-4 h-4 text-indigo-400" />
+                        <div
+                            className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+                            style={{
+                                backgroundColor: 'var(--bg-mint)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '8px'
+                            }}
+                        >
+                            <Bot className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                         </div>
-                        <div className="rounded-2xl px-4 py-3 bg-slate-800">
-                            <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />
+                        <div
+                            className="px-4 py-3"
+                            style={{
+                                backgroundColor: 'var(--bg-white)',
+                                border: '2px solid var(--border-dark)',
+                                borderRadius: '12px'
+                            }}
+                        >
+                            <Loader2 className="w-5 h-5 animate-spin" style={{ color: 'var(--accent-coral)' }} />
                         </div>
                     </div>
                 )}
@@ -657,13 +748,21 @@ export default function ChatPage() {
 
             {/* Error */}
             {error && (
-                <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                <div
+                    className="mb-4 p-3 text-sm"
+                    style={{
+                        backgroundColor: '#FFF0F0',
+                        border: '2px solid #FF6B6B',
+                        borderRadius: '8px',
+                        color: '#CC0000'
+                    }}
+                >
                     {error}
                 </div>
             )}
 
             {/* Input */}
-            <form onSubmit={handleSubmit} className="pt-4 border-t border-slate-800">
+            <form onSubmit={handleSubmit} className="pt-4" style={{ borderTop: '2px solid var(--border-dark)' }}>
                 <div className="flex gap-4">
                     <input
                         type="text"
@@ -677,12 +776,18 @@ export default function ChatPage() {
                                     : "Ask a question about your document..."
                         }
                         disabled={loading || (document && document.status !== 'ready')}
-                        className="flex-1 px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 px-4 py-3 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{
+                            backgroundColor: 'var(--bg-white)',
+                            border: '2px solid var(--border-dark)',
+                            borderRadius: '8px',
+                            color: 'var(--text-primary)'
+                        }}
                     />
                     <button
                         type="submit"
                         disabled={loading || !input.trim() || document?.status !== 'ready'}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-indigo-500/30"
+                        className="btn-primary disabled:opacity-50"
                     >
                         {loading ? (
                             <Loader2 className="w-5 h-5 animate-spin" />

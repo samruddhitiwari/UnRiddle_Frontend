@@ -8,12 +8,10 @@ import {
   Crown,
   Building2,
   Timer,
-  Loader2,
   Clock,
   AlertTriangle,
-  XCircle,
+  Mail,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 /* ------------------ CONFIG ------------------ */
@@ -33,7 +31,7 @@ interface Plan {
   description: string;
   features: string[];
   icon: any;
-  gradient: string;
+  bgColor: string;
   popular?: boolean;
   oneTime?: boolean;
   contactSales?: boolean;
@@ -49,7 +47,7 @@ const plans: Plan[] = [
     period: "forever",
     description: "Perfect for trying out Unriddle",
     icon: Zap,
-    gradient: "from-slate-600 to-slate-700",
+    bgColor: "var(--bg-cream)",
     features: [
       "5 documents",
       "50 queries per month",
@@ -65,7 +63,7 @@ const plans: Plan[] = [
     period: "14 days",
     description: "Full access trial (no auto-renewal)",
     icon: Timer,
-    gradient: "from-emerald-500 to-teal-600",
+    bgColor: "var(--bg-mint)",
     oneTime: true,
     features: [
       "50 documents",
@@ -82,7 +80,7 @@ const plans: Plan[] = [
     period: "month",
     description: "For professionals who need more",
     icon: Crown,
-    gradient: "from-indigo-500 to-purple-600",
+    bgColor: "var(--bg-peach)",
     popular: true,
     features: [
       "50 documents",
@@ -100,7 +98,7 @@ const plans: Plan[] = [
     period: "",
     description: "For teams and organizations",
     icon: Building2,
-    gradient: "from-purple-500 to-pink-600",
+    bgColor: "var(--bg-lavender)",
     contactSales: true,
     features: [
       "Unlimited documents",
@@ -124,7 +122,6 @@ export default function SubscriptionPage() {
   const [starterDaysRemaining, setStarterDaysRemaining] = useState<number | null>(
     null
   );
-  const [error, setError] = useState<string | null>(null);
 
   /* ---------- LOAD USER ---------- */
 
@@ -179,28 +176,32 @@ export default function SubscriptionPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-white">Choose your plan</h1>
-        <p className="text-slate-400 mt-2">
+      <div>
+        <h1 className="heading-lg">Choose your plan</h1>
+        <p className="body-md mt-2" style={{ color: 'var(--text-muted)' }}>
           Unlock the full power of document intelligence
         </p>
       </div>
 
       {/* Subscription Issue Banner */}
       {hasSubscriptionIssue && (
-        <div className="p-4 rounded-xl border bg-red-500/10 border-red-500/30 flex gap-4">
-          <AlertTriangle className="w-6 h-6 text-red-400" />
+        <div
+          className="brutalist-card p-4 flex gap-4"
+          style={{ backgroundColor: '#FFF0F0' }}
+        >
+          <AlertTriangle className="w-6 h-6" style={{ color: '#CC0000' }} />
           <div className="flex-1">
-            <div className="text-white font-semibold">
+            <div className="font-semibold" style={{ color: 'var(--text-primary)' }}>
               Subscription issue detected
             </div>
-            <div className="text-slate-400 text-sm mt-1">
+            <div className="text-sm mt-1" style={{ color: 'var(--text-body)' }}>
               Please contact support to resolve billing issues.
             </div>
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="inline-block mt-3 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm"
+              className="btn-primary inline-flex mt-3 text-sm py-2 px-4"
             >
+              <Mail className="w-4 h-4" />
               Contact Support
             </a>
           </div>
@@ -211,19 +212,22 @@ export default function SubscriptionPage() {
       {currentPlan === "starter" &&
         starterDaysRemaining !== null &&
         starterDaysRemaining <= 3 && (
-          <div className="p-4 rounded-xl border bg-amber-500/10 border-amber-500/30 flex items-center gap-4">
-            <Clock className="w-6 h-6 text-amber-400" />
+          <div
+            className="brutalist-card p-4 flex items-center gap-4"
+            style={{ backgroundColor: 'var(--bg-pale-yellow)' }}
+          >
+            <Clock className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
             <div className="flex-1">
-              <div className="text-white font-semibold">
+              <div className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                 Starter Pass expiring soon
               </div>
-              <div className="text-slate-400 text-sm">
+              <div className="text-sm" style={{ color: 'var(--text-body)' }}>
                 Upgrade to Pro to keep your access.
               </div>
             </div>
             <button
               onClick={redirectToDodo}
-              className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white"
+              className="btn-primary text-sm py-2 px-4"
             >
               Upgrade to Pro
             </button>
@@ -235,29 +239,65 @@ export default function SubscriptionPage() {
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className={cn(
-              "relative bg-slate-900/50 border rounded-2xl p-6",
-              plan.popular && "border-indigo-500/50",
-              currentPlan === plan.id && "ring-2 ring-indigo-500"
-            )}
+            className="brutalist-card relative p-6"
+            style={{
+              backgroundColor: plan.bgColor,
+              boxShadow: currentPlan === plan.id ? '6px 6px 0 var(--border-dark)' : undefined
+            }}
           >
-            <plan.icon className="w-10 h-10 text-white mb-4" />
+            {plan.popular && (
+              <div
+                className="absolute -top-3 left-4 px-3 py-1 text-sm font-semibold"
+                style={{
+                  backgroundColor: 'var(--accent-coral)',
+                  border: '2px solid var(--border-dark)',
+                  borderRadius: '6px',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                Most Popular
+              </div>
+            )}
 
-            <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-            <p className="text-slate-400 text-sm">{plan.description}</p>
+            <div
+              className="w-12 h-12 flex items-center justify-center mb-4"
+              style={{
+                backgroundColor: 'var(--bg-white)',
+                border: '2px solid var(--border-dark)',
+                borderRadius: '8px'
+              }}
+            >
+              <plan.icon className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
+            </div>
+
+            <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{plan.name}</h3>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{plan.description}</p>
 
             <div className="mt-4 mb-6">
               {typeof plan.price === "number" ? (
                 <>
-                  <span className="text-4xl font-bold text-white">
+                  <span className="text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>
                     ${plan.price}
                   </span>
                   {plan.period && (
-                    <span className="text-slate-400">/{plan.period}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>/{plan.period}</span>
+                  )}
+                  {plan.oneTime && (
+                    <span
+                      className="ml-2 text-xs font-semibold px-2 py-0.5"
+                      style={{
+                        backgroundColor: 'var(--accent-teal)',
+                        border: '1px solid var(--border-dark)',
+                        borderRadius: '4px',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      one-time
+                    </span>
                   )}
                 </>
               ) : (
-                <span className="text-3xl font-bold text-white">
+                <span className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
                   {plan.price}
                 </span>
               )}
@@ -265,8 +305,8 @@ export default function SubscriptionPage() {
 
             <ul className="space-y-3 mb-6">
               {plan.features.map((f, i) => (
-                <li key={i} className="flex gap-2 text-slate-300 text-sm">
-                  <Check className="w-4 h-4 text-indigo-400" /> {f}
+                <li key={i} className="flex gap-2 text-sm" style={{ color: 'var(--text-body)' }}>
+                  <Check className="w-4 h-4" style={{ color: 'var(--accent-teal)' }} /> {f}
                 </li>
               ))}
             </ul>
@@ -274,21 +314,22 @@ export default function SubscriptionPage() {
             {plan.contactSales ? (
               <a
                 href={`mailto:sales@unriddle.voltalabs.space`}
-                className="block w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-center"
+                className="btn-secondary w-full justify-center text-sm"
               >
+                <Mail className="w-4 h-4" />
                 Contact Sales
               </a>
             ) : plan.id === "pro" ? (
               <button
                 onClick={redirectToDodo}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold"
+                className="btn-primary w-full justify-center text-sm"
               >
                 Upgrade to Pro
               </button>
             ) : (
               <button
                 disabled
-                className="w-full py-3 rounded-xl bg-slate-800 text-slate-400 cursor-not-allowed"
+                className="btn-secondary w-full justify-center text-sm cursor-not-allowed opacity-50"
               >
                 {currentPlan === plan.id ? "Current Plan" : "Unavailable"}
               </button>
@@ -298,9 +339,13 @@ export default function SubscriptionPage() {
       </div>
 
       {/* Legal */}
-      <div className="text-center text-sm text-slate-500">
-        <Link href="/terms">Terms</Link> · <Link href="/privacy">Privacy</Link> ·{" "}
-        <Link href="/refund">Refund</Link> · Payments processed securely
+      <div className="text-center text-sm" style={{ color: 'var(--text-muted)' }}>
+        <Link href="/terms" className="hover:underline underline-offset-4">Terms</Link>
+        {" · "}
+        <Link href="/privacy" className="hover:underline underline-offset-4">Privacy</Link>
+        {" · "}
+        <Link href="/refund" className="hover:underline underline-offset-4">Refund</Link>
+        {" · Payments processed securely"}
       </div>
     </div>
   );

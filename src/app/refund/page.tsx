@@ -8,16 +8,29 @@ export const metadata = {
 
 export default function RefundPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-cream)' }}>
             {/* Navigation */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
+            <nav
+                className="fixed top-0 left-0 right-0 z-50"
+                style={{
+                    backgroundColor: 'var(--bg-white)',
+                    borderBottom: '2px solid var(--border-dark)'
+                }}
+            >
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <Link href="/" className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                                <FileText className="w-5 h-5 text-white" />
+                            <div
+                                className="w-9 h-9 flex items-center justify-center"
+                                style={{
+                                    backgroundColor: 'var(--accent-coral)',
+                                    border: '2px solid var(--border-dark)',
+                                    borderRadius: '8px'
+                                }}
+                            >
+                                <FileText className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                             </div>
-                            <span className="text-xl font-bold text-white">Unriddle</span>
+                            <span className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Unriddle</span>
                         </Link>
                     </div>
                 </div>
@@ -27,43 +40,53 @@ export default function RefundPage() {
                 <div className="max-w-4xl mx-auto">
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+                        className="inline-flex items-center gap-2 mb-6 font-medium hover:underline underline-offset-4"
+                        style={{ color: 'var(--text-body)' }}
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Back to home
                     </Link>
 
-                    <h1 className="text-4xl font-bold text-white mb-2">Refund Policy</h1>
-                    <p className="text-slate-400 mb-8">Last updated: December 2025</p>
+                    <h1 className="heading-lg mb-2">Refund Policy</h1>
+                    <p className="mb-8" style={{ color: 'var(--text-muted)' }}>Last updated: December 2025</p>
 
-                    <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 space-y-8 text-slate-300 leading-relaxed">
-
+                    <div
+                        className="brutalist-card p-8 space-y-8 leading-relaxed"
+                        style={{ backgroundColor: 'var(--bg-white)', color: 'var(--text-body)' }}
+                    >
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Introduction</h2>
+                            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Introduction</h2>
                             <p className="mb-3">
                                 Unriddle is operated by Volta Labs. You can access our service at{' '}
-                                <a href="https://unriddle.voltalabs.space" className="text-indigo-400 hover:underline">
+                                <a href="https://unriddle.voltalabs.space" className="font-medium hover:underline underline-offset-4" style={{ color: 'var(--accent-coral)' }}>
                                     https://unriddle.voltalabs.space
                                 </a>.
                             </p>
                             <p>
-                                All payments for Unriddle are processed by Paddle.com, which acts as the Merchant of Record for all transactions. Paddle handles billing, payment processing, and refunds on our behalf.
+                                All payments for Unriddle are processed by Paddle.com, which acts as the Merchant of Record for all transactions.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">14-Day Refund Policy</h2>
+                            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>14-Day Refund Policy</h2>
                             <p className="mb-4">
                                 We offer a 14-day refund policy for all purchases made through Unriddle. If you are not satisfied with your purchase, you may request a full refund within 14 days of the original purchase date.
                             </p>
-                            <div className="bg-slate-800/50 rounded-xl p-4 mb-4">
-                                <h3 className="text-lg font-medium text-white mb-3">This policy applies to:</h3>
+                            <div
+                                className="p-4 mb-4"
+                                style={{
+                                    backgroundColor: 'var(--bg-mint)',
+                                    border: '2px solid var(--border-dark)',
+                                    borderRadius: '8px'
+                                }}
+                            >
+                                <h3 className="text-lg font-medium mb-3" style={{ color: 'var(--text-primary)' }}>This policy applies to:</h3>
                                 <ul className="list-disc list-inside space-y-2 ml-2">
                                     <li>
-                                        <strong className="text-white">Starter Pass</strong> — $3 one-time purchase for 14 days of access
+                                        <strong style={{ color: 'var(--text-primary)' }}>Starter Pass</strong> — $3 one-time purchase for 14 days of access
                                     </li>
                                     <li>
-                                        <strong className="text-white">Pro Subscription</strong> — $6/month subscription (initial subscription period)
+                                        <strong style={{ color: 'var(--text-primary)' }}>Pro Subscription</strong> — $6/month subscription (initial subscription period)
                                     </li>
                                 </ul>
                             </div>
@@ -73,7 +96,7 @@ export default function RefundPage() {
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Subscription Cancellations</h2>
+                            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Subscription Cancellations</h2>
                             <p className="mb-4">
                                 You may cancel your Pro subscription at any time through the Paddle customer portal or by contacting us directly.
                             </p>
@@ -86,7 +109,7 @@ export default function RefundPage() {
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">How Refunds Are Processed</h2>
+                            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>How Refunds Are Processed</h2>
                             <p className="mb-4">
                                 All refunds are processed by Paddle.com, our Merchant of Record.
                             </p>
@@ -98,10 +121,10 @@ export default function RefundPage() {
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
+                            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Contact Us</h2>
                             <p>
                                 If you would like to request a refund or have any questions about this policy, please contact us at:{' '}
-                                <a href="mailto:support@voltalabs.space" className="text-indigo-400 hover:underline">
+                                <a href="mailto:support@voltalabs.space" className="font-medium hover:underline underline-offset-4" style={{ color: 'var(--accent-coral)' }}>
                                     support@voltalabs.space
                                 </a>
                             </p>
@@ -109,13 +132,13 @@ export default function RefundPage() {
                     </div>
 
                     {/* Footer Links */}
-                    <div className="mt-12 pt-8 border-t border-slate-800">
-                        <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-400">
-                            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-                            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-                            <Link href="/refund" className="text-indigo-400">Refund Policy</Link>
+                    <div className="mt-12 pt-8" style={{ borderTop: '2px solid var(--border-dark)' }}>
+                        <div className="flex flex-wrap justify-center gap-6 text-sm">
+                            <Link href="/terms" className="hover:underline underline-offset-4" style={{ color: 'var(--text-body)' }}>Terms of Service</Link>
+                            <Link href="/privacy" className="hover:underline underline-offset-4" style={{ color: 'var(--text-body)' }}>Privacy Policy</Link>
+                            <Link href="/refund" className="font-semibold" style={{ color: 'var(--accent-coral)' }}>Refund Policy</Link>
                         </div>
-                        <p className="text-center text-slate-500 text-sm mt-4">
+                        <p className="text-center text-sm mt-4" style={{ color: 'var(--text-muted)' }}>
                             © {new Date().getFullYear()} Volta Labs. Payments processed by Paddle.com
                         </p>
                     </div>
