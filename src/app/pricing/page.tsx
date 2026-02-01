@@ -259,19 +259,12 @@ export default function PricingPage() {
                       Upgrade to Pro
                     </button>
                   ) : plan.id === "starter" ? (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        window.location.assign(
-                          "https://checkout.dodopayments.com/buy/pdt_0NXZIO5U1Po7oCj7R7O73?quantity=1"
-                        );
-                      }}
-                      className="btn-primary w-full justify-center text-sm"
+                    <a
+                      href="https://checkout.dodopayments.com/buy/pdt_0NXZIO5U1Po7oCj7R7O73?quantity=1"
+                      className="btn-primary w-full justify-center text-sm inline-flex"
                     >
                       Buy Starter Pass
-                    </button>
+                    </a>
                   ) : (
                     <Link
                       href="/login"

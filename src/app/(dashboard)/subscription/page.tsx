@@ -334,13 +334,12 @@ export default function SubscriptionPage() {
                 Upgrade to Pro
               </button>
             ) : plan.id === "starter" ? (
-              <button
-                onClick={redirectToStarterCheckout}
-                disabled={currentPlan === "starter" || currentPlan === "pro"}
-                className={`btn-primary w-full justify-center text-sm ${currentPlan === "starter" || currentPlan === "pro" ? "cursor-not-allowed opacity-50" : ""}`}
+              <a
+                href={currentPlan === "starter" || currentPlan === "pro" ? undefined : DODO_STARTER_CHECKOUT}
+                className={`btn-primary w-full justify-center text-sm inline-flex ${currentPlan === "starter" || currentPlan === "pro" ? "cursor-not-allowed opacity-50 pointer-events-none" : ""}`}
               >
                 {currentPlan === "starter" ? "Current Plan" : "Buy Starter Pass"}
-              </button>
+              </a>
             ) : (
               <button
                 disabled
