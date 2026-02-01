@@ -19,6 +19,9 @@ import Link from "next/link";
 const DODO_PRO_CHECKOUT =
   "https://checkout.dodopayments.com/buy/pdt_0NVJl7v7rUIYOFuhWmwZl?quantity=1";
 
+const DODO_STARTER_CHECKOUT =
+  "https://checkout.dodopayments.com/buy/pdt_0NXZIO5U1Po7oCj7R7O73?quantity=1";
+
 const SUPPORT_EMAIL = "support@unriddle.voltalabs.space";
 
 /* ------------------ TYPES ------------------ */
@@ -165,6 +168,10 @@ export default function SubscriptionPage() {
 
   const redirectToDodo = () => {
     window.location.assign(DODO_PRO_CHECKOUT);
+  };
+
+  const redirectToStarterCheckout = () => {
+    window.location.assign(DODO_STARTER_CHECKOUT);
   };
 
   const hasSubscriptionIssue = ["past_due", "cancelled", "expired", "paused"].includes(
@@ -326,12 +333,20 @@ export default function SubscriptionPage() {
               >
                 Upgrade to Pro
               </button>
+            ) : plan.id === "starter" ? (
+              <button
+                onClick={redirectToStarterCheckout}
+                disabled={currentPlan === "starter" || currentPlan === "pro"}
+                className={`btn-primary w-full justify-center text-sm ${currentPlan === "starter" || currentPlan === "pro" ? "cursor-not-allowed opacity-50" : ""}`}
+              >
+                {currentPlan === "starter" ? "Current Plan" : "Buy Starter Pass"}
+              </button>
             ) : (
               <button
                 disabled
                 className="btn-secondary w-full justify-center text-sm cursor-not-allowed opacity-50"
               >
-                {currentPlan === plan.id ? "Current Plan" : "Unavailable"}
+                {currentPlan === plan.id ? "Current Plan" : "Get Started Free"}
               </button>
             )}
           </div>
